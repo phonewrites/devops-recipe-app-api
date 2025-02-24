@@ -1,19 +1,3 @@
-<div align="center">
-    <a href="https://londonappdeveloper.com" target="_blank">
-        <img src="https://londonappdeveloper.com/wp-content/uploads/2024/11/banner.svg" alt="Banner image" />
-    </a>
-</div>
-
-<div align="center">
-    <p>Full-Stack Consulting and Courses.</p>
-    <a href="https://londonappdeveloper.com" target="_blank">Website</a> |
-    <a href="https://londonappdeveloper.teachable.com/" target="_blank">Courses</a> |
-    <a href="https://londonappdeveloper.com/tutorials/" target="_blank">Tutorials</a> |
-    <a href="https://londonappdeveloper.com/consulting/" target="_blank">Consulting
-</div>
-
-<br /><br >
-
 # DevOps Deployment Automation with Terraform, AWS and Docker - Starter Code
 
 This project contains the starter code for our course: [DevOps Deployment Automation with Terraform, AWS and Docker](https://londonapp.dev/c3).
@@ -45,10 +29,10 @@ docker compose up
 To create a superuser to access the Django admin follow these steps.
 
 1.  Run the below command and follow the in terminal instructions:
-
 ```sh
 docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
+>Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
 2.  Browse the Django admin at [http://127.0.0.1:8000/admin] and login.
 
