@@ -12,12 +12,15 @@ ENV APP_PORT=9000
 USER root
 
 RUN mkdir -p /vol/static && \
-    chmod 755 /vol/static && \
+    mkdir -p /vol/media && \
+    chmod 755 /vol && \
+    chown -R nginx:nginx /vol && \
     touch /etc/nginx/conf.d/default.conf && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
     chmod +x /run.sh
 
-VOLUME /vol/static
+# Mount the volumes to the container using JSON array syntax instead of multiple VOLUME instructions
+VOLUME [ "/vol/static", "/vol/media" ]
 
 USER nginx
 
