@@ -19,8 +19,9 @@ Follow the below steps to run a local development environment.
 2.  Clone the project, `cd` to it in Terminal/Command Prompt and run the following:
 
 ```sh
-docker compose up
+docker compose up -d
 ```
+>I prefer the -d flag to run it in detached mode. Optional.
 
 3.  Browse the project at [http://127.0.0.1:8000/api/health-check/](http://127.0.0.1:8000/api/health-check/)
 
@@ -28,7 +29,7 @@ docker compose up
 
 To create a superuser to access the Django admin follow these steps.
 
-1.  Run the below command and follow the in terminal instructions:
+1.  Run the below command and follow the instructions in terminal:
 ```sh
 docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
@@ -39,12 +40,23 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ### Clearing Storage
 
 To clear all storage (including the database) and start fresh:
-
 ```sh
 docker compose down --volumes
-docker compose up
 ```
 
+- Do the same to test the deployment-specific file
+```sh
+docker compose -f docker-compose-deploy.yml up -d
+```
+```sh
+docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"
+```
+
+
+
+
+
+############# MY EDITS TILL HERE #####
 ## Course Documentation
 
 This section contains supplementary documentation for the course steps.
