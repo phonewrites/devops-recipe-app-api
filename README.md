@@ -35,7 +35,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 >Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at [http://127.0.0.1:8000/admin] and login.
+2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api.docs` 
 
 ### Clearing Storage
 
@@ -51,7 +51,8 @@ docker compose -f docker-compose-deploy.yml up -d
 ```sh
 docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"
 ```
-
+Login at `http://127.0.0.1/admin`
+Go to `http://127.0.0.1/api/docs`
 
 
 
