@@ -38,7 +38,8 @@ ENV PATH="/scripts:/py/bin:$PATH"
 
 USER django-user
 
-# Mount the volumes to the container using JSON array syntax instead of multiple VOLUME instructions
+#Mount volumes to container using JSON array
+#syntax instead of multiple VOLUME instructions
 VOLUME [ "/vol/web/media", "/vol/web/static" ]
 
 CMD ["run.sh"]

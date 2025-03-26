@@ -19,7 +19,8 @@ RUN mkdir -p /vol/static && \
     chown nginx:nginx /etc/nginx/conf.d/default.conf && \
     chmod +x /run.sh
 
-# Mount the volumes to the container using JSON array syntax instead of multiple VOLUME instructions
+#Mount volumes to container using JSON array
+#syntax instead of multiple VOLUME instructions
 VOLUME [ "/vol/static", "/vol/media" ]
 
 USER nginx
