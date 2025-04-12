@@ -21,7 +21,8 @@ terraform {
 
 # Default aws provider set to be mgmt account 
 provider "aws" {
-  # profile = "mgmt"
+  profile = "mgmt"
+  region  = "us-east-1"
   default_tags {
     tags = {
       environment = terraform.workspace
@@ -35,6 +36,7 @@ provider "aws" {
 provider "aws" {
   profile = "prod"
   alias   = "prod"
+  region  = "us-east-1"
   default_tags {
     tags = {
       environment = terraform.workspace

@@ -2,19 +2,24 @@
 # IAM resources needed for Continuous Deployment (CD) #
 #######################################################
 
-resource "aws_iam_user" "cd" {
-  name = "recipe-app-api-cd"
+resource "aws_iam_user" "cd_user" {
+  name = "recipe-app-api-cd-user"
 }
 
-resource "aws_iam_access_key" "cd" {
-  user = aws_iam_user.cd.name
+resource "aws_iam_access_key" "cd_user_access_key" {
+  user = aws_iam_user.cd_user.name
 }
 
 #########################################################
 # Policy for Teraform backend to S3 and DynamoDB access #
 #########################################################
+resource "aws_iam_policy" "tf_backend_policy" {
+  name        = "${aws_iam_user.cd_user.name}-tf-backend-policy"
+  description = "Allow user to use S3 and DynamoDB for TF backend resources"
+  policy      = data.aws_iam_policy_document.tf_backend_policy.json
+}
 
-data "aws_iam_policy_document" "tf_backend" {
+data "aws_iam_policy_document" "tf_backend_policy" {
   statement {
     effect    = "Allow"
     actions   = ["s3:ListBucket"]
@@ -41,31 +46,51 @@ data "aws_iam_policy_document" "tf_backend" {
   }
 }
 
-resource "aws_iam_policy" "tf_backend" {
-  name        = "${aws_iam_user.cd.name}-tf-s3-dynamodb"
-  description = "Allow user to use S3 and DynamoDB for TF backend resources"
-  policy      = data.aws_iam_policy_document.tf_backend.json
-}
-
 resource "aws_iam_user_policy_attachment" "tf_backend" {
-  user       = aws_iam_user.cd.name
-  policy_arn = aws_iam_policy.tf_backend.arn
+  user       = aws_iam_user.cd_user.name
+  policy_arn = aws_iam_policy.tf_backend_policy.arn
+}
+
+#########################
+# Policy for ECR access #
+#########################
+resource "aws_iam_policy" "ecr_policy" {
+  name        = "${aws_iam_user.cd_user.name}-ecr-policy"
+  description = "Allow user to manage ECR resources"
+  policy      = data.aws_iam_policy_document.ecr_policy.json
+}
+
+data "aws_iam_policy_document" "ecr_policy" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    effect = "Allow"
+    actions = [
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage"
+    ]
+    resources = [
+      aws_ecr_repository.app.arn,
+      aws_ecr_repository.proxy.arn,
+    ]
+  }
+}
+resource "aws_iam_user_policy_attachment" "ecr" {
+  user       = aws_iam_user.cd_user.name
+  policy_arn = aws_iam_policy.ecr_policy.arn
 }
 
 
-#########################################################
-# Outputs for the CD user's access key and secret key   #
-#########################################################
-output "cd_user_access_key_id" {
-  description = "Access key ID for CD user"
-  value       = aws_iam_access_key.cd.id
-}
 
-output "cd_user_access_key_secret" {
-  description = "Access key secret for CD user"
-  value       = aws_iam_access_key.cd.secret
-  sensitive   = true
-}
+
+
+
 
 
 
