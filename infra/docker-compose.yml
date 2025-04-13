@@ -1,0 +1,9 @@
+services:
+  terraform:
+    image: hashicorp/terraform:1.6.2
+    volumes:
+      - ./setup:/tf/setup
+      - ./deploy:/tf/deploy
+      #Mount local AWS config as read-only
+      - ~/.aws:/root/.aws:ro
+    working_dir: /tf
