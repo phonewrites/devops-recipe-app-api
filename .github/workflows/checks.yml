@@ -7,7 +7,7 @@ on:
 jobs:
   test-lint:
     name: Test and Lint
-    uses: ./.github/workflows/python-test+lint.yml
+    uses: ./.github/workflows/python-test-lint.yml
     secrets:
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
