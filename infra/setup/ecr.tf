@@ -11,7 +11,6 @@ resource "aws_ecr_repository" "recipe_app_api_app" {
     scan_on_push = false #Set true for real deployments.
   }
 }
-
 resource "aws_ecr_repository" "precipe_app_api_proxy" {
   name = "recipe-app-api-proxy"
   #   provider             = aws.prod
