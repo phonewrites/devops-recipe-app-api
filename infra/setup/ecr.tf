@@ -2,7 +2,7 @@
 # Create ECR repos in prod for storing Docker images #
 ######################################################
 
-resource "aws_ecr_repository" "app" {
+resource "aws_ecr_repository" "recipe_app_api_app" {
   name = "recipe-app-api-app"
   #   provider             = aws.prod
   image_tag_mutability = "MUTABLE"
@@ -12,7 +12,7 @@ resource "aws_ecr_repository" "app" {
   }
 }
 
-resource "aws_ecr_repository" "proxy" {
+resource "aws_ecr_repository" "precipe_app_api_proxy" {
   name = "recipe-app-api-proxy"
   #   provider             = aws.prod
   image_tag_mutability = "MUTABLE"

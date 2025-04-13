@@ -3,7 +3,7 @@
 #######################################################
 
 resource "aws_iam_user" "cd_user" {
-  name = "recipe-app-api-cd-user"
+  name = "cd-user"
 }
 
 resource "aws_iam_access_key" "cd_user_access_key" {
@@ -46,7 +46,7 @@ data "aws_iam_policy_document" "tf_backend_policy" {
   }
 }
 
-resource "aws_iam_user_policy_attachment" "tf_backend" {
+resource "aws_iam_user_policy_attachment" "tf_backend_policy_attachment" {
   user       = aws_iam_user.cd_user.name
   policy_arn = aws_iam_policy.tf_backend_policy.arn
 }
@@ -76,12 +76,12 @@ data "aws_iam_policy_document" "ecr_policy" {
       "ecr:PutImage"
     ]
     resources = [
-      aws_ecr_repository.app.arn,
-      aws_ecr_repository.proxy.arn,
+      aws_ecr_repository.recipe_app_api_app.arn,
+      aws_ecr_repository.precipe_app_api_proxy.arn,
     ]
   }
 }
-resource "aws_iam_user_policy_attachment" "ecr" {
+resource "aws_iam_user_policy_attachment" "ecr_policy_attachment" {
   user       = aws_iam_user.cd_user.name
   policy_arn = aws_iam_policy.ecr_policy.arn
 }
