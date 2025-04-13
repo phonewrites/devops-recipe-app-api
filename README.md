@@ -1,9 +1,3 @@
-# DevOps Deployment Automation with Terraform, AWS and Docker - Starter Code
-
-This project contains the starter code for our course: [DevOps Deployment Automation with Terraform, AWS and Docker](https://londonapp.dev/c3).
-
-It contains the code you should have by the end of our [Build a Backend REST API with Python & Django REST Framework - Advanced](https://londonapp.dev/c2) course. We've created this snapshot, in-case we update the aforementioned course in the future.
-
 ## Local Development
 
 ### Running Project
@@ -19,9 +13,8 @@ Follow the below steps to run a local development environment.
 2.  Clone the project, `cd` to it in Terminal/Command Prompt and run the following:
 
 ```sh
-docker compose up -d
+docker compose up
 ```
->I prefer the -d flag to run it in detached mode. Optional.
 
 3.  Browse the project at [http://127.0.0.1:8000/api/health-check/](http://127.0.0.1:8000/api/health-check/)
 
@@ -29,77 +22,23 @@ docker compose up -d
 
 To create a superuser to access the Django admin follow these steps.
 
-1.  Run the below command and follow the instructions in terminal:
+1.  Run the below command and follow the in terminal instructions:
+
 ```sh
 docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
->Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api.docs` 
+2.  Browse the Django admin at [http://127.0.0.1:8000/admin] and login.
 
 ### Clearing Storage
 
 To clear all storage (including the database) and start fresh:
+
 ```sh
 docker compose down --volumes
+docker compose up
 ```
 
-- Do the same to test the deployment-specific file
-```sh
-docker compose -f docker-compose-deploy.yml up -d
-```
-```sh
-docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"
-```
-Login at `http://127.0.0.1/admin`
-Go to `http://127.0.0.1/api/docs`
-
-- After setting up Gunicorn related configs, rebuild to use new dockerfile/s
-```
-docker compose -f docker-compose-deploy.yml build
-```
-
-## Terraform Setup
-Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
-```
-aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
-aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
-```
-Create a Dynamo-DB table with Partition key attribute `LockID` for state locking.
-```
-aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
-```
-
-
-Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I will use OICD passed IAM roles.
-
-
-Sources:
-https://github.com/github/gitignore/blob/main/Terraform.gitignore
-
-
-TEST - REMOVE LATER
-------------
-{
-  "title": "Coconut sweet",
-  "time_minutes": "60",
-  "price": "10.00",
-  "link": "https://example.com",
-  "tags": [
-    {
-      "name": "sweets"
-    }
-  ],
-  "ingredients": [
-    {
-      "name": "coconut"
-    }
-  ],
-  "description": "Oriental coconut sweets dev env"
-}
-------------
-
-############# MY EDITS TILL HERE #####
 ## Course Documentation
 
 This section contains supplementary documentation for the course steps.
