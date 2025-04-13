@@ -166,3 +166,7 @@ override.tf.json
 .terraformrc
 terraform.rc
 .deploy.env
+
+
+Ignore README.md till the end of project
+README.md
