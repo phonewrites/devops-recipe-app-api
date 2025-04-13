@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "ecr_policy" {
     ]
     resources = [
       aws_ecr_repository.recipe_app_api_app.arn,
-      aws_ecr_repository.precipe_app_api_proxy.arn,
+      aws_ecr_repository.recipe_app_api_proxy.arn,
     ]
   }
 }
