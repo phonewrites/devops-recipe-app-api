@@ -54,8 +54,50 @@ docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py
 Login at `http://127.0.0.1/admin`
 Go to `http://127.0.0.1/api/docs`
 
+- After setting up Gunicorn related configs, rebuild to use new dockerfile/s
+```
+docker compose -f docker-compose-deploy.yml build
+```
+
+## Terraform Setup
+Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
+```
+aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
+aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
+```
+Create a Dynamo-DB table with Partition key attribute `LockID` for state locking.
+```
+aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
+```
 
 
+Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I will use OICD passed IAM roles.
+
+
+Sources:
+https://github.com/github/gitignore/blob/main/Terraform.gitignore
+
+
+TEST - REMOVE LATER
+------------
+{
+  "title": "Coconut sweet",
+  "time_minutes": "60",
+  "price": "10.00",
+  "link": "https://example.com",
+  "tags": [
+    {
+      "name": "sweets"
+    }
+  ],
+  "ingredients": [
+    {
+      "name": "coconut"
+    }
+  ],
+  "description": "Oriental coconut sweets dev env"
+}
+------------
 
 ############# MY EDITS TILL HERE #####
 ## Course Documentation
