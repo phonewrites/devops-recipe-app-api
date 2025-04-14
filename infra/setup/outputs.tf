@@ -1,15 +1,15 @@
 #########################################################
 # Outputs for the CD user's access key and secret key   #
-#########################################################
-output "cd_user_access_key_id" {
-  description = "Access key ID for CD user"
-  value       = aws_iam_access_key.cd_user_access_key.id
-}
-output "cd_user_access_key_secret" {
-  description = "Access key secret for CD user"
-  value       = aws_iam_access_key.cd_user_access_key.secret
-  sensitive   = true
-}
+# #########################################################
+# output "cd_user_access_key_id" {
+#   description = "Access key ID for CD user"
+#   value       = aws_iam_access_key.cd_user_access_key.id
+# }
+# output "cd_user_access_key_secret" {
+#   description = "Access key secret for CD user"
+#   value       = aws_iam_access_key.cd_user_access_key.secret
+#   sensitive   = true
+# }
 
 
 #########################################################
