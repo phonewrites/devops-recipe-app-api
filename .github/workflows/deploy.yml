@@ -1,0 +1,76 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - prod
+
+permissions:
+  id-token: write #Allows GitHub to issue an OIDC token
+  contents: read #Allows GitHub to checkout code
+                 #default permission when no permissions block is present
+
+jobs:
+  test-lint:
+    uses: ./.github/workflows/test-lint.yml
+    name: Test and Lint
+    secrets:
+      DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-22.04
+    needs: [test-lint]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set the var for terraform workspace environment
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
+            echo "prod" > .workspace
+          else
+          echo "staging" > .workspace
+          fi
+      - name: Assume the initial role in mgmt account using OIDC 
+        uses: aws-actions/configure-aws-credentials@v4.2.0
+        with:
+          role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
+        #   role-session-name: "${{ GITHUB_ACTOR }}-githubactions"
+          aws-region: us-east-1
+          
+      - name: Assume the CI/CD Role in prod account
+        uses: aws-actions/configure-aws-credentials@v4.2.0
+        with:
+          role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
+          aws-region: us-east-1
+          
+      - name: Login to ECR using the assumed role credentials 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+        
+      # Build and push Docker images
+      - name: Build and push the API app image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}         
+      - name: Build and push the API proxy image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: ./proxy
+          push: true
+          tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}    
+
+    #   - name: Push to ECR
+    #     env:
+    #       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+    #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     run: |
+    #       aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+    #       docker build --compress -t ${{ vars.ECR_REPO_APP_URI }}:$GITHUB_SHA .
+    #       docker push ${{ vars.ECR_REPO_APP_URI }}:$GITHUB_SHA
+    #       docker build --compress -t ${{ vars.ECR_REPO_PROXY_URI }}:$GITHUB_SHA proxy/
+    #       docker push ${{ vars.ECR_REPO_PROXY_URI }}:$GITHUB_SHA          
