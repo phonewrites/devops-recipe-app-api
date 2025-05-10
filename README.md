@@ -70,8 +70,22 @@ Create a Dynamo-DB table with Partition key attribute `LockID` for state locking
 aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
 ```
 
+Run the common commands via Docker Compose
+>Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session bizzle --no-browser`
+```
+docker compose run --rm terraform -chdir=setup fmt
+docker compose run --rm terraform -chdir=setup vaidate
+docker compose run --rm terraform -chdir=setup plan
+docker compose run --rm terraform -chdir=setup apply
+```
+Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
-Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I will use OICD passed IAM roles.
+
+
+
+
+
+
 
 
 Sources:
