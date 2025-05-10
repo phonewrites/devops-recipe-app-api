@@ -37,6 +37,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
+          role-session-name: github-actions
         #   role-session-name: "${{ GITHUB_ACTOR }}-githubactions"
           aws-region: us-east-1
           
@@ -45,6 +46,7 @@ jobs:
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           aws-region: us-east-1
+          role-chaining: true          
           
       - name: Login to ECR using the assumed role credentials 
         id: login-ecr
