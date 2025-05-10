@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "cicd_assume_role_policy" {
     actions = ["sts:AssumeRole", "sts:TagSession"]
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.github_actions_oidc_role.arn]
+      identifiers = [aws_iam_role.oidc_github_actions_role.arn]
     }
   }
 }
