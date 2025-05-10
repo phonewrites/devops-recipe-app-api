@@ -37,16 +37,17 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
-          role-session-name: github-actions
-        #   role-session-name: "${{ GITHUB_ACTOR }}-githubactions"
+        #   role-session-name: github-actions-mgmt
+          role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
           
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
+          role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
-          role-chaining: true          
+          role-chaining: true        
           
       - name: Login to ECR using the assumed role credentials 
         id: login-ecr
@@ -58,14 +59,17 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}         
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
       - name: Build and push the API proxy image
         uses: docker/build-push-action@v6.16.0
         with:
           context: ./proxy
           push: true
-          tags: ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}    
-
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
     #   - name: Push to ECR
     #     env:
     #       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
