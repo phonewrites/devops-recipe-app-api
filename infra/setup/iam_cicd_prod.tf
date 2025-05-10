@@ -74,7 +74,9 @@ data "aws_iam_policy_document" "ecr_policy" {
       "ecr:UploadLayerPart",
       "ecr:InitiateLayerUpload",
       "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage"
+      "ecr:PutImage",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
     ]
     resources = [
       aws_ecr_repository.recipe_app_api_app.arn,
