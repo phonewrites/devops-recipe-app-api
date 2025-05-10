@@ -169,4 +169,4 @@ terraform.rc
 
 
 # Ignore README.md till the end of project
-README.md
+**/README.md
