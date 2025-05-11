@@ -56,6 +56,7 @@ docker compose -f docker-compose-deploy.yml build
 ```
 
 ## Terraform Setup
+These resources are created & managed outside Terraform & are used to store the Terraform state.
 Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
 ```
 aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
