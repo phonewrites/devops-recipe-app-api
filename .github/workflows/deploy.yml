@@ -37,7 +37,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
-        #   role-session-name: github-actions-mgmt
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
           

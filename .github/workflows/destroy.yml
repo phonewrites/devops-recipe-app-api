@@ -1,3 +1,6 @@
+# TO TEST & EDIT LATER
+# This workflow is triggered manually to destroy AWS resources in the specified environment.
+
 name: Destroy
 
 on:
@@ -5,24 +8,51 @@ on:
     inputs:
       environment:
         type: choice
-        description: Which environment to remove AWS resources for?
+        description: Which environment’s AWS resources should be destroyed?
         options:
           - staging
           - prod
+
+permissions:
+  id-token: write #Allows GitHub to issue an OIDC token
+  contents: read #Allows GitHub to checkout code
+                 #default permission when no permissions block is present
 
 jobs:
   destroy:
     name: Destroy
     runs-on: ubuntu-22.04
+
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set Terraform workspace
+        run: |
+          echo "TF_WORKSPACE=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+
+      # 1) Assume initial OIDC role in mgmt account
+      - name: Assume mgmt OIDC role
+        uses: aws-actions/configure-aws-credentials@v4.2.0
+        with:
+          role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
+          role-session-name: gh-actions-mgmt-${{ github.actor }}
+          aws-region: us-east-1
+
+      # 2) Chain into the CICD role in prod (so we have permissions to run Terraform)
+      - name: Assume prod CICD role
+        uses: aws-actions/configure-aws-credentials@v4.2.0
+        with:
+          role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
+          role-session-name: gh-actions-prod-${{ github.actor }}
+          aws-region: us-east-1
+          role-chaining: true
+
       - name: Terraform Destroy
         env:
-          AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
         run: |
-          export TF_WORKSPACE=${{ github.event.inputs.environment }}
           cd infra/
-          docker compose run --rm terraform -chdir=deploy/ init
-          docker compose run --rm terraform -chdir=deploy/ destroy -auto-approve
+          docker compose run --rm terraform -chdir=deploy init
+          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$TF_WORKSPACE"
+          docker compose run --rm terraform -chdir=deploy destroy -auto-approve
