@@ -1,6 +1,6 @@
 FROM python:3.9-alpine3.13
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 ARG UID=101
 COPY ./requirements.txt /tmp/requirements.txt
