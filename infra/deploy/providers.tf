@@ -19,34 +19,31 @@ terraform {
     key                  = "devops-recipe-app-api/deploy-state"
     workspace_key_prefix = "devops-recipe-app-api/workspace"
     region               = "us-east-1"
-    assume_role = {
-      role_arn = "arn:aws:iam::961341515801:role/oidc-gh-actions-role"
-    }
   }
 }
 
-provider "aws" {
-  profile = "prod"
-  region  = "us-east-1"
-  default_tags {
-    tags = {
-      environment = terraform.workspace
-      project     = var.project
-      contact     = var.contact
-      #   managed_by    = "Terraform/deploy"
-    }
-  }
-}
-provider "aws" {
-  profile = "mgmt"
-  alias   = "mgmt"
-  region  = "us-east-1"
-  default_tags {
-    tags = {
-      environment = terraform.workspace
-      project     = var.project
-      contact     = var.contact
-      #   managed_by    = "Terraform/setup"
-    }
-  }
-}
+# provider "aws" {
+#   profile = "prod"
+#   region  = "us-east-1"
+#   default_tags {
+#     tags = {
+#       environment = terraform.workspace
+#       project     = var.project
+#       contact     = var.contact
+#       #   managed_by    = "Terraform/deploy"
+#     }
+#   }
+# }
+# provider "aws" {
+#   profile = "mgmt"
+#   alias   = "mgmt"
+#   region  = "us-east-1"
+#   default_tags {
+#     tags = {
+#       environment = terraform.workspace
+#       project     = var.project
+#       contact     = var.contact
+#       #   managed_by    = "Terraform/setup"
+#     }
+#   }
+# }
