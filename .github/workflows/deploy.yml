@@ -40,15 +40,6 @@ jobs:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
-
-      # INIT + WORKSPACE must use mgmt creds
-      - name: Terraform Init & Select Workspace
-        run: |
-          # Point Terraform at the backend state
-          WORKSPACE=$(cat .workspace)
-          cd infra/
-          docker compose run --rm terraform -chdir=deploy init   -input=false
-          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$WORKSPACE"       
           
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.0
@@ -80,15 +71,26 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
 
+
+      # INIT + WORKSPACE must use mgmt creds
+      - name: Assume the initial role in mgmt account using OIDC 
+        uses: aws-actions/configure-aws-credentials@v4.2.0
+        with:
+          role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
+          role-session-name: gh-actions-mgmt-${{ github.actor }}
+          aws-region: us-east-1
+
       - name: Terraform Apply
         env:
             TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
             TF_VAR_django_secret_key: ${{ secrets.TF_VAR_DJANGO_SECRET_KEY }}
         run: |
+            # Point Terraform at the backend state
+            WORKSPACE=$(cat .workspace)
+            cd infra/
+            docker compose run --rm terraform -chdir=deploy/ init   -input=false
+            docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE" 
             # Point Terraform at the latest images
             export TF_VAR_ecr_app_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest"
             export TF_VAR_ecr_proxy_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest"
-            # Pass TF_WORKSPACE explicitly to this docker compose run command
-            TF_WORKSPACE=$(cat .workspace)
-            cd infra/
-            docker compose run --rm -e TF_WORKSPACE="$TF_WORKSPACE" terraform -chdir=deploy/ apply -auto-approve
+            docker compose run --rm terraform -chdir=deploy/ apply -auto-approve

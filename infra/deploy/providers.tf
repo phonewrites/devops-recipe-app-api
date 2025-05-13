@@ -22,28 +22,15 @@ terraform {
   }
 }
 
-# provider "aws" {
-#   profile = "prod"
-#   region  = "us-east-1"
-#   default_tags {
-#     tags = {
-#       environment = terraform.workspace
-#       project     = var.project
-#       contact     = var.contact
-#       #   managed_by    = "Terraform/deploy"
-#     }
-#   }
-# }
-# provider "aws" {
-#   profile = "mgmt"
-#   alias   = "mgmt"
-#   region  = "us-east-1"
-#   default_tags {
-#     tags = {
-#       environment = terraform.workspace
-#       project     = var.project
-#       contact     = var.contact
-#       #   managed_by    = "Terraform/setup"
-#     }
-#   }
-# }
+provider "aws" {
+  profile = "mgmt"
+  region  = "us-east-1"
+  default_tags {
+    tags = {
+      environment = terraform.workspace
+      project     = var.project
+      contact     = var.contact
+      #   managed_by    = "Terraform/deploy"
+    }
+  }
+}
