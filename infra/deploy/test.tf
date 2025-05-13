@@ -6,5 +6,4 @@ resource "aws_s3_bucket" "test_bucket" {
     create = "5m"
     delete = "6m"
   }
-
 }

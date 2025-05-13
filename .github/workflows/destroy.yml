@@ -8,7 +8,7 @@ on:
     inputs:
       environment:
         type: choice
-        description: Which environment’s AWS resources should be destroyed?
+        description: Which environment's AWS resources should be destroyed?
         options:
           - staging
           - prod
@@ -29,7 +29,7 @@ jobs:
 
       - name: Set Terraform workspace
         run: |
-          echo "TF_WORKSPACE=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          echo "WORKSPACE=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
 
       # 1) Assume initial OIDC role in mgmt account
       - name: Assume mgmt OIDC role
@@ -53,6 +53,6 @@ jobs:
           AWS_DEFAULT_REGION: us-east-1
         run: |
           cd infra/
-          docker compose run --rm terraform -chdir=deploy init
-          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$TF_WORKSPACE"
-          docker compose run --rm terraform -chdir=deploy destroy -auto-approve
+          docker compose run --rm terraform -chdir=deploy/ init
+          docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE"
+          docker compose run --rm terraform -chdir=deploy/ destroy -auto-approve
