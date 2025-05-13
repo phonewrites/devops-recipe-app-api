@@ -45,10 +45,10 @@ jobs:
       - name: Terraform Init & Select Workspace
         run: |
           # Point Terraform at the backend state
-          workspace=$(cat .workspace)
+          WORKSPACE=$(cat .workspace)
           cd infra/
           docker compose run --rm terraform -chdir=deploy init   -input=false
-          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$WORKSPACE"          
+          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$WORKSPACE"       
           
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.0
