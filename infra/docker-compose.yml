@@ -4,7 +4,7 @@ services:
     volumes:
       - ./setup:/tf/setup
       - ./deploy:/tf/deploy
-      #Mount local AWS config as read-only
+      #Mount local AWS config as read-only for setup/ configs
       - ~/.aws:/root/.aws:ro
     working_dir: /tf
     environment:
