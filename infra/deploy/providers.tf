@@ -19,9 +19,7 @@ terraform {
     key                  = "devops-recipe-app-api/deploy-state"
     workspace_key_prefix = "devops-recipe-app-api/workspace"
     region               = "us-east-1"
-    # assume_role = {
-    #   role_arn = "arn:aws:iam::396913743052:role/cicd-gh-actions-role"
-    # }
+    role_arn       = "arn:aws:iam::961341515801:role/oidc-gh-actions-role"
   }
 }
 
