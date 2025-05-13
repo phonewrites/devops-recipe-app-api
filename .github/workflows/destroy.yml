@@ -1,4 +1,3 @@
-# TO TEST & EDIT LATER
 # This workflow is triggered manually to destroy AWS resources in the specified environment.
 
 name: Destroy
