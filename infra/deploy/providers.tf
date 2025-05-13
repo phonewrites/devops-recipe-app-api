@@ -19,17 +19,9 @@ terraform {
     key                  = "devops-recipe-app-api/deploy-state"
     workspace_key_prefix = "devops-recipe-app-api/workspace"
     region               = "us-east-1"
-  }
-}
-
-provider "aws" {
-  region  = "us-east-1"
-  default_tags {
-    tags = {
-      environment = terraform.workspace
-      project     = var.project
-      contact     = var.contact
-      #   managed_by    = "Terraform/deploy"
+    assume_role = {
+      role_arn = "arn:aws:iam::961341515801:role/tf-backend-access-role"
     }
   }
 }
+
