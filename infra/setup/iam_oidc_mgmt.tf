@@ -28,7 +28,6 @@ resource "aws_iam_role" "oidc_github_actions_role" {
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy.json
   depends_on         = [aws_iam_openid_connect_provider.github_actions]
 }
-
 data "aws_iam_policy_document" "oidc_assume_role_policy" {
   statement {
     effect  = "Allow"
@@ -50,61 +49,43 @@ data "aws_iam_policy_document" "oidc_assume_role_policy" {
   }
 }
 
-# Policy to assume the CICD role in prod account
-resource "aws_iam_policy" "assume_cicd_gh_actions_role_policy" {
-  name   = "assume-cicd-gh-actions-role-policy"
-  policy = data.aws_iam_policy_document.assume_cicd_gh_actions_role_policy.json
+##1. Policy to assume the Terraform Backend Access role in mgmt account
+resource "aws_iam_policy" "oidc_assume_tf_backend_access_role_policy" {
+  name   = "oidc-assume-tf-backend-access-role-policy"
+  policy = data.aws_iam_policy_document.assume_tf_backend_access_role_policy.json
 }
-data "aws_iam_policy_document" "assume_cicd_gh_actions_role_policy" {
+resource "aws_iam_role_policy_attachment" "oidc_assume_tf_backend_access_role_policy" {
+  role       = aws_iam_role.oidc_github_actions_role.name
+  policy_arn = aws_iam_policy.oidc_assume_tf_backend_access_role_policy.arn
+}
+
+##2. Policy to assume the CICD role in prod account
+resource "aws_iam_policy" "oidc_assume_cicd_gh_actions_role_policy" {
+  name   = "oidc-assume-cicd-gh-actions-role-policy"
+  policy = data.aws_iam_policy_document.oidc_assume_cicd_gh_actions_role_policy.json
+}
+data "aws_iam_policy_document" "oidc_assume_cicd_gh_actions_role_policy" {
   statement {
     actions   = ["sts:AssumeRole", "sts:TagSession"]
     effect    = "Allow"
     resources = [aws_iam_role.cicd_gh_actions_role.arn]
   }
 }
-resource "aws_iam_role_policy_attachment" "assume_cicd_gh_actions_role_policy" {
+resource "aws_iam_role_policy_attachment" "oidc_assume_cicd_gh_actions_role_policy" {
   role       = aws_iam_role.oidc_github_actions_role.name
-  policy_arn = aws_iam_policy.assume_cicd_gh_actions_role_policy.arn
+  policy_arn = aws_iam_policy.oidc_assume_cicd_gh_actions_role_policy.arn
 }
 
-# Policy for Teraform backend to S3 and DynamoDB access
+##3. Policy for Teraform backend to S3 and DynamoDB access
 resource "aws_iam_policy" "oidc_tf_backend_policy" {
   name        = "${aws_iam_role.oidc_github_actions_role.name}-tf-backend-policy"
   description = "Allow access to S3 & DynamoDB for TF backend resources"
-  policy      = data.aws_iam_policy_document.oidc_tf_backend_policy.json
-}
-data "aws_iam_policy_document" "oidc_tf_backend_policy" {
-  statement {
-    sid    = "BackendStateS3Access"
-    effect = "Allow"
-    actions = [
-      "s3:ListBucket",
-      "s3:GetObject",
-      "s3:PutObject",
-      "s3:DeleteObject"
-    ]
-    resources = [
-      data.aws_s3_bucket.tf_state_bucket.arn,
-      "${data.aws_s3_bucket.tf_state_bucket.arn}/*",
-    ]
-  }
-  statement {
-    sid    = "BackendStateLockDynamoAccess"
-    effect = "Allow"
-    actions = [
-      "dynamodb:DescribeTable",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:DeleteItem"
-    ]
-    resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
-  }
+  policy      = data.aws_iam_policy_document.tf_backend_access_policy.json
 }
 resource "aws_iam_role_policy_attachment" "oidc_tf_backend_policy" {
   role       = aws_iam_role.oidc_github_actions_role.name
   policy_arn = aws_iam_policy.oidc_tf_backend_policy.arn
 }
-
 
 
 # Teraform state backend bucket policy for prod account's CICD role access
@@ -136,7 +117,7 @@ data "aws_iam_policy_document" "tf_state_bucket_policy" {
   }
 }
 
-# Teraform state lock table policy for prod account's CICD role access
+# Teraform state lock table resource policy for prod account's CICD role access
 resource "aws_dynamodb_resource_policy" "tf_state_lock_table_policy" {
   resource_arn = data.aws_dynamodb_table.tf_state_lock_table.arn
   policy       = data.aws_iam_policy_document.tf_state_lock_table_policy.json
@@ -162,3 +143,41 @@ data "aws_iam_policy_document" "tf_state_lock_table_policy" {
 
   }
 }
+
+
+
+
+
+# import {
+#   to = aws_iam_openid_connect_provider.github_actions
+#   id = "arn:aws:iam::961341515801:oidc-provider/token.actions.githubusercontent.com"
+# }
+# import {
+#   to = aws_iam_role.oidc_github_actions_role
+#   id = "oidc-gh-actions-role"
+# }
+# import {
+#   to = aws_iam_policy.oidc_tf_backend_policy
+#   id = "arn:aws:iam::961341515801:policy/oidc-gh-actions-role-tf-backend-policy"
+# }
+# import {
+#   to = aws_iam_policy.ecr_policy
+#   id = "arn:aws:iam::396913743052:policy/cicd-gh-actions-role-ecr-policy"
+# }
+# import {
+#   to = aws_iam_policy.cicd_tf_backend_policy
+#   id = "arn:aws:iam::396913743052:policy/cicd-gh-actions-role-tf-backend-policy"
+# }
+# import {
+#   to = aws_iam_policy.assume_cicd_gh_actions_role_policy
+#   id = "arn:aws:iam::961341515801:policy/assume-cicd-gh-actions-role-policy"
+# }
+
+
+
+# import {
+#   to = aws_iam_role.cicd_gh_actions_role
+#   id = "cicd-gh-actions-role"
+# }
+
+
