@@ -16,13 +16,13 @@ data "aws_iam_policy_document" "cicd_assume_role_policy" {
 }
 
 # Policy for Teraform backend to S3 and DynamoDB access
-resource "aws_iam_policy" "tf_backend_policy" {
+resource "aws_iam_policy" "cicd_tf_backend_policy" {
   provider    = aws.prod
   name        = "${aws_iam_role.cicd_gh_actions_role.name}-tf-backend-policy"
   description = "Allow access to S3 & DynamoDB for TF backend resources"
-  policy      = data.aws_iam_policy_document.tf_backend_policy.json
+  policy      = data.aws_iam_policy_document.cicd_tf_backend_policy.json
 }
-data "aws_iam_policy_document" "tf_backend_policy" {
+data "aws_iam_policy_document" "cicd_tf_backend_policy" {
   statement {
     sid    = "BackendStateS3Access"
     effect = "Allow"
@@ -49,10 +49,10 @@ data "aws_iam_policy_document" "tf_backend_policy" {
     resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
   }
 }
-resource "aws_iam_role_policy_attachment" "tf_backend_policy" {
+resource "aws_iam_role_policy_attachment" "cicd_tf_backend_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.tf_backend_policy.arn
+  policy_arn = aws_iam_policy.cicd_tf_backend_policy.arn
 }
 
 

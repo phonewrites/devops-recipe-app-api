@@ -10,12 +10,12 @@ terraform {
   }
   # Terraform state backend configuration in mgmt account
   backend "s3" {
-    profile        = "mgmt"
     bucket         = "tf-state-nvirginia-961341515801"
     dynamodb_table = "terraform-state-locks"
     encrypt        = true
     key            = "devops-recipe-app-api/infra/setup/tf.state"
     region         = "us-east-1"
+    profile        = "mgmt"
   }
 }
 
@@ -33,6 +33,7 @@ provider "aws" {
   }
 }
 
+# aws provider alias set for prod account 
 provider "aws" {
   profile = "prod"
   alias   = "prod"
