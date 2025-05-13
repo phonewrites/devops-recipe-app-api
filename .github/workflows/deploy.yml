@@ -88,6 +88,7 @@ jobs:
             # Point Terraform at the latest images
             export TF_VAR_ecr_app_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest"
             export TF_VAR_ecr_proxy_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest"
+            # Pass TF_WORKSPACE explicitly to this docker compose run command
+            TF_WORKSPACE=$(cat .workspace)
             cd infra/
-            docker compose run --rm terraform -chdir=deploy/ apply -auto-approve
-            
+            docker compose run --rm -e TF_WORKSPACE="$TF_WORKSPACE" terraform -chdir=deploy/ apply -auto-approve
