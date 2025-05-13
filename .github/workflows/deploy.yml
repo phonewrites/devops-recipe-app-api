@@ -40,6 +40,15 @@ jobs:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
+
+      # INIT + WORKSPACE must use mgmt creds
+      - name: Terraform Init & Select Workspace
+        run: |
+          # Point Terraform at the backend state
+          workspace=$(cat .workspace)
+          cd infra/
+          docker compose run --rm terraform -chdir=deploy init   -input=false
+          docker compose run --rm terraform -chdir=deploy workspace select -or-create "$WORKSPACE"          
           
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.0
@@ -79,9 +88,5 @@ jobs:
             # Point Terraform at the latest images
             export TF_VAR_ecr_app_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest"
             export TF_VAR_ecr_proxy_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest"
-            workspace=$(cat .workspace)
-            cd infra/
-            docker compose run --rm terraform -chdir=deploy/ init
-            docker compose run --rm terraform -chdir=deploy/ workspace select -or-create $workspace
             docker compose run --rm terraform -chdir=deploy/ apply -auto-approve
             
