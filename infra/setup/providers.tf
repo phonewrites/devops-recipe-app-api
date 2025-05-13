@@ -13,7 +13,7 @@ terraform {
     bucket         = "tf-state-nvirginia-961341515801"
     dynamodb_table = "terraform-state-locks"
     encrypt        = true
-    key            = "devops-recipe-app-api/infra/setup/tf.state"
+    key            = "devops-recipe-app-api/setup-state"
     region         = "us-east-1"
     profile        = "mgmt"
   }
