@@ -23,7 +23,6 @@ terraform {
 }
 
 provider "aws" {
-  profile = "mgmt"
   region  = "us-east-1"
   default_tags {
     tags = {
