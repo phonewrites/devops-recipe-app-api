@@ -17,7 +17,7 @@ terraform {
     dynamodb_table       = "terraform-state-locks"
     encrypt              = true
     key                  = "devops-recipe-app-api/infra/deploy/tf.state"
-    workspace_key_prefix = "devops-recipe-app-api/infra/deploy/"
+    workspace_key_prefix = "devops-recipe-app-api/infra/deploy-workspace"
     region               = "us-east-1"
     assume_role = {
       role_arn = "arn:aws:iam::961341515801:role/oidc-gh-actions-role"
