@@ -25,6 +25,8 @@ jobs:
     runs-on: ubuntu-22.04
     # needs: [test-lint]
     steps:
+
+      # Prep      
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set the terraform workspace variable
@@ -50,36 +52,28 @@ jobs:
           aws-region: us-east-1
           role-chaining: true        
 
+      # Login, build, tag and push Docker images to AWS ECR          
+      - name: Login to ECR using the assumed role credentials 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1       
+      - name: Build and push the API app image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
+      - name: Build and push the API proxy image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: ./proxy
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
 
-  # ##Uncomment after testing
-  #     # Login, build, tag and push Docker images to AWS ECR          
-  #     - name: Login to ECR using the assumed role credentials 
-  #       id: login-ecr
-  #       uses: aws-actions/amazon-ecr-login@v2.0.1       
-  #     - name: Build and push the API app image
-  #       uses: docker/build-push-action@v6.16.0
-  #       with:
-  #         context: .
-  #         push: true
-  #         tags: |
-  #           ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
-  #           ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
-  #     - name: Build and push the API proxy image
-  #       uses: docker/build-push-action@v6.16.0
-  #       with:
-  #         context: ./proxy
-  #         push: true
-  #         tags: |
-  #           ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
-  #           ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
-
-      # Terraform commands to deploy the app
-      # - name: Assume the mgmt account role using OIDC 
-      #   uses: aws-actions/configure-aws-credentials@v4.2.0
-      #   with:
-      #     role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
-      #     role-session-name: gh-actions-mgmt-${{ github.actor }}
-      #     aws-region: us-east-1
+      # Apply final config to prod account       
       - name: Terraform apply
         env:
             TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
@@ -91,6 +85,6 @@ jobs:
             docker compose run --rm terraform -chdir=deploy/ init   -input=false
             docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE" 
             # Point Terraform at the latest images
-            # export TF_VAR_ecr_app_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest"
-            # export TF_VAR_ecr_proxy_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest"
+            export TF_VAR_ecr_app_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest"
+            export TF_VAR_ecr_proxy_image="${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest"
             docker compose run --rm terraform -chdir=deploy/ apply -auto-approve

@@ -12,4 +12,5 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_SESSION_TOKEN
       - AWS_DEFAULT_REGION
-      - TF_WORKSPACE    
+      - AWS_REGION
+      - TF_WORKSPACE
