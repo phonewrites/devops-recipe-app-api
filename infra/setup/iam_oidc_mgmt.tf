@@ -2,6 +2,12 @@
 # MODIFICATIONS TO AVOID LONG-LIVED ACCESS KEYS #
 #################################################
 
+data "aws_s3_bucket" "tf_state_bucket" {
+  bucket = var.tf_state_bucket
+}
+data "aws_dynamodb_table" "tf_state_lock_table" {
+  name = var.tf_state_lock_table
+}
 
 # OIDC provider to authenticate & authorize GH Actions workflows to access AWS resources
 resource "aws_iam_openid_connect_provider" "github_actions" {
@@ -59,5 +65,4 @@ resource "aws_iam_role_policy_attachment" "assume_cicd_gh_actions_role_policy" {
   role       = aws_iam_role.oidc_github_actions_role.name
   policy_arn = aws_iam_policy.assume_cicd_gh_actions_role_policy.arn
 }
-
 

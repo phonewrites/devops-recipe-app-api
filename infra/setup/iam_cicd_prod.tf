@@ -24,11 +24,7 @@ resource "aws_iam_policy" "tf_backend_policy" {
 }
 data "aws_iam_policy_document" "tf_backend_policy" {
   statement {
-    effect    = "Allow"
-    actions   = ["s3:ListBucket"]
-    resources = ["arn:aws:s3:::${var.tf_state_bucket}"]
-  }
-  statement {
+    sid    = "BackendStateS3Access"
     effect = "Allow"
     actions = [
       "s3:ListBucket",
@@ -37,10 +33,12 @@ data "aws_iam_policy_document" "tf_backend_policy" {
       "s3:DeleteObject"
     ]
     resources = [
-      "arn:aws:s3:::${var.tf_state_bucket}/*",
+      data.aws_s3_bucket.tf_state_bucket.arn,
+      "${data.aws_s3_bucket.tf_state_bucket.arn}/*",
     ]
   }
   statement {
+    sid    = "BackendStateLockDynamoAccess"
     effect = "Allow"
     actions = [
       "dynamodb:DescribeTable",
@@ -48,7 +46,7 @@ data "aws_iam_policy_document" "tf_backend_policy" {
       "dynamodb:PutItem",
       "dynamodb:DeleteItem"
     ]
-    resources = ["arn:aws:dynamodb:*:*:table/${var.tf_state_lock_table}"]
+    resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
   }
 }
 resource "aws_iam_role_policy_attachment" "tf_backend_policy" {
@@ -67,6 +65,7 @@ resource "aws_iam_policy" "ecr_policy" {
 }
 data "aws_iam_policy_document" "ecr_policy" {
   statement {
+    sid    = "ECRAccess"
     effect    = "Allow"
     actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
