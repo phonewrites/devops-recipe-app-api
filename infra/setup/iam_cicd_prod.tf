@@ -65,7 +65,7 @@ resource "aws_iam_policy" "ecr_policy" {
 }
 data "aws_iam_policy_document" "ecr_policy" {
   statement {
-    sid    = "ECRAccess"
+    sid       = "ECRAccess"
     effect    = "Allow"
     actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]

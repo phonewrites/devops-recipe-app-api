@@ -66,3 +66,28 @@ resource "aws_iam_role_policy_attachment" "assume_cicd_gh_actions_role_policy" {
   policy_arn = aws_iam_policy.assume_cicd_gh_actions_role_policy.arn
 }
 
+# Teraform backend bucket Policy for prod account's CICD role access
+resource "aws_s3_bucket_policy" "tf_backend_bucket_policy" {
+  bucket = data.aws_s3_bucket.tf_state_bucket.id
+  policy = data.aws_iam_policy_document.tf_backend_bucket_policy.json
+}
+data "aws_iam_policy_document" "tf_backend_bucket_policy" {
+  statement {
+    sid    = "AllowProdCICDRoleAccess"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.cicd_gh_actions_role.arn]
+    }
+    actions = [
+      "s3:ListBucket",
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      data.aws_s3_bucket.tf_state_bucket.arn,
+      "${data.aws_s3_bucket.tf_state_bucket.arn}/*",
+    ]
+  }
+}
