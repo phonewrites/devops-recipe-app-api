@@ -66,12 +66,12 @@ resource "aws_iam_role_policy_attachment" "assume_cicd_gh_actions_role_policy" {
   policy_arn = aws_iam_policy.assume_cicd_gh_actions_role_policy.arn
 }
 
-# Teraform backend bucket Policy for prod account's CICD role access
-resource "aws_s3_bucket_policy" "tf_backend_bucket_policy" {
+# Teraform state backend bucket policy for prod account's CICD role access
+resource "aws_s3_bucket_policy" "tf_state_bucket_policy" {
   bucket = data.aws_s3_bucket.tf_state_bucket.id
-  policy = data.aws_iam_policy_document.tf_backend_bucket_policy.json
+  policy = data.aws_iam_policy_document.tf_state_bucket_policy.json
 }
-data "aws_iam_policy_document" "tf_backend_bucket_policy" {
+data "aws_iam_policy_document" "tf_state_bucket_policy" {
   statement {
     sid    = "AllowProdCICDRoleAccess"
     effect = "Allow"
@@ -89,5 +89,29 @@ data "aws_iam_policy_document" "tf_backend_bucket_policy" {
       data.aws_s3_bucket.tf_state_bucket.arn,
       "${data.aws_s3_bucket.tf_state_bucket.arn}/*",
     ]
+  }
+}
+
+# Teraform state lock table policy for prod account's CICD role access
+resource "aws_dynamodb_resource_policy" "tf_state_lock_table_policy" {
+  resource_arn = data.aws_dynamodb_table.tf_state_lock_table.arn
+  policy       = data.aws_iam_policy_document.tf_state_lock_table_policy.json
+}
+data "aws_iam_policy_document" "tf_state_lock_table_policy" {
+  statement {
+    sid    = "AllowProdCICDRoleAccess"
+    effect = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.cicd_gh_actions_role.arn]
+    }
+    actions = [
+      "dynamodb:DescribeTable",
+      "dynamodb:GetItem",
+      "dynamodb:PutItem",
+      "dynamodb:DeleteItem"
+    ]
+    resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
+
   }
 }

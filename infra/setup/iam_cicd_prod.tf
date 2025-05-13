@@ -92,6 +92,3 @@ resource "aws_iam_role_policy_attachment" "ecr_policy" {
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.ecr_policy.arn
 }
-
-
-
