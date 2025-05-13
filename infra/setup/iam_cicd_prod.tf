@@ -31,10 +31,10 @@ data "aws_iam_policy_document" "tf_backend_policy" {
   statement {
     effect = "Allow"
     actions = [
+      "s3:ListBucket",
       "s3:GetObject",
       "s3:PutObject",
-      "s3:DeleteObject",
-      "s3:ListObjectsV2",
+      "s3:DeleteObject"
     ]
     resources = [
       "arn:aws:s3:::${var.tf_state_bucket}/*",
