@@ -57,6 +57,15 @@ data "aws_iam_policy_document" "ecr_policy" {
       aws_ecr_repository.recipe_app_api_proxy.arn,
     ]
   }
+  statement {
+    sid    = "S3FullAccess"
+    effect = "Allow"
+    actions = [
+      "s3:*",
+      "s3-object-lambda:*"
+    ]
+    resources = ["*"]
+  }
 }
 resource "aws_iam_role_policy_attachment" "ecr_policy" {
   provider   = aws.prod
