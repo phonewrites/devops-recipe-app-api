@@ -1,13 +1,12 @@
 # This workflow is triggered manually to destroy AWS resources in the specified environment.
-
 name: Destroy
 
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      workspace:
         type: choice
-        description: Which environment's AWS resources should be destroyed?
+        description: Which AWS environment's resources should be destroyed?
         options:
           - staging
           - prod
@@ -28,24 +27,22 @@ jobs:
 
       - name: Set Terraform workspace
         run: |
-          echo "WORKSPACE=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          echo "WORKSPACE=${{ github.event.inputs.workspace }}" >> $GITHUB_ENV
 
-      # 1) Assume initial OIDC role in mgmt account
-      - name: Assume mgmt OIDC role
+      # Chaining roles to the prod account
+      - name: Assume the initial role in mgmt account using OIDC 
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
-          aws-region: us-east-1
-
-      # 2) Chain into the CICD role in prod (so we have permissions to run Terraform)
-      - name: Assume prod CICD role
+          aws-region: us-east-1          
+      - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.0
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
-          role-chaining: true
+          role-chaining: true 
 
       - name: Terraform Destroy
         env:

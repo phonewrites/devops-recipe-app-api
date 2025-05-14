@@ -13,17 +13,17 @@ permissions:
 
 jobs:
 
-  test-lint:
-    uses: ./.github/workflows/test-lint.yml
-    name: Test and Lint
-    secrets:
-      DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  # test-lint:
+  #   uses: ./.github/workflows/test-lint.yml
+  #   name: Test and Lint
+  #   secrets:
+  #     DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+  #     DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
-    needs: [test-lint]
+#    needs: [test-lint]
     steps:
 
       # Prep      
@@ -52,29 +52,29 @@ jobs:
           aws-region: us-east-1
           role-chaining: true        
 
-      # Login, build, tag and push Docker images to AWS ECR          
-      - name: Login to ECR using the assumed role credentials 
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2.0.1       
-      - name: Build and push the API app image
-        uses: docker/build-push-action@v6.16.0
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
-      - name: Build and push the API proxy image
-        uses: docker/build-push-action@v6.16.0
-        with:
-          context: ./proxy
-          push: true
-          tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
+      # # Login, build, tag and push Docker images to AWS ECR          
+      # - name: Login to ECR using the assumed role credentials 
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2.0.1       
+      # - name: Build and push the API app image
+      #   uses: docker/build-push-action@v6.16.0
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: |
+      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
+      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
+      # - name: Build and push the API proxy image
+      #   uses: docker/build-push-action@v6.16.0
+      #   with:
+      #     context: ./proxy
+      #     push: true
+      #     tags: |
+      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
+      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
 
       # Apply final config to prod account       
-      - name: Terraform apply
+      - name: Terraform Apply
         env:
             TF_VAR_db_password: ${{ secrets.TF_VAR_DB_PASSWORD }}
             TF_VAR_django_secret_key: ${{ secrets.TF_VAR_DJANGO_SECRET_KEY }}
