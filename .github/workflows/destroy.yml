@@ -48,7 +48,8 @@ jobs:
         env:
           AWS_DEFAULT_REGION: us-east-1
         run: |
-          cd infra/
-          docker compose run --rm terraform -chdir=deploy/ init
-          docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE"
-          docker compose run --rm terraform -chdir=deploy/ destroy -auto-approve
+            cd infra/
+            docker compose run --rm terraform -chdir=deploy/ init   -input=false
+            docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE"
+            docker compose run --rm terraform -chdir=deploy/ plan   -input=false
+            docker compose run --rm terraform -chdir=deploy/ destroy -auto-approve

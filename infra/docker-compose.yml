@@ -12,7 +12,5 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_SESSION_TOKEN
       - AWS_DEFAULT_REGION
-      # to test/fix s3 still creating loop 
-      - AWS_REGION
-      # to test/fix s3 still creating loop
+      - AWS_REGION #Fix "Still creating…" loops for global services
       - TF_WORKSPACE
