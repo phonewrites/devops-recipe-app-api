@@ -27,10 +27,10 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
   policy_arn = aws_iam_policy.cicd_assume_tf_backend_access_role_policy.arn
 }
 
-##2. Policy for ECR access
+##2. Policy for deployments by GitHub Actions
 resource "aws_iam_policy" "cicd_gh_actions_policy" {
   provider    = aws.prod
-  name        = "${aws_iam_role.cicd_gh_actions_role.name}-ecr-policy"
+  name        = "${aws_iam_role.cicd_gh_actions_role.name}-policy"
   description = "Allow managing of ECR resources"
   policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
 }
@@ -42,7 +42,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     resources = ["*"]
   }
   statement {
-    sid = "ECRRepositoryPushPull"  
+    sid    = "ECRRepositoryPushPull"
     effect = "Allow"
     actions = [
       "ecr:CompleteLayerUpload",
@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
   }
   statement {
-    sid       = "EC2VPCManagement"
+    sid    = "EC2VPCManagement"
     effect = "Allow"
     actions = [
       "ec2:DescribeVpcs",
