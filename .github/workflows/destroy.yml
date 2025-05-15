@@ -1,4 +1,4 @@
-# This workflow is triggered manually to destroy AWS resources in the specified environment.
+# This workflow is triggered manually to destroy AWS resources in prod account.
 name: Destroy
 
 on:
@@ -29,21 +29,24 @@ jobs:
         run: |
           echo "WORKSPACE=${{ github.event.inputs.workspace }}" >> $GITHUB_ENV
 
-      # Chaining roles to the prod account
+      # AWS authentication – chaining roles to the prod account
       - name: Assume the initial role in mgmt account using OIDC 
-        uses: aws-actions/configure-aws-credentials@v4.2.0
+        uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
-          aws-region: us-east-1          
+          aws-region: us-east-1
+          mask-aws-account-id: true
       - name: Assume the CI/CD Role in prod account
-        uses: aws-actions/configure-aws-credentials@v4.2.0
+        uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
+          mask-aws-account-id: true
           role-chaining: true 
 
+      # Destroy the deployed resources in prod account       
       - name: Terraform Destroy
         env:
           AWS_DEFAULT_REGION: us-east-1
@@ -51,5 +54,4 @@ jobs:
             cd infra/
             docker compose run --rm terraform -chdir=deploy/ init   -input=false
             docker compose run --rm terraform -chdir=deploy/ workspace select -or-create "$WORKSPACE"
-            docker compose run --rm terraform -chdir=deploy/ plan   -input=false
             docker compose run --rm terraform -chdir=deploy/ destroy -auto-approve
