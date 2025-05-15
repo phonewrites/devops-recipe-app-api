@@ -33,14 +33,14 @@ jobs:
       - name: Assume the initial role in mgmt account using OIDC 
         uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
-          role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
+          role-to-assume: ${{ secrets.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
           mask-aws-account-id: true
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
-          role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
+          role-to-assume: ${{ secrets.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
           mask-aws-account-id: true
