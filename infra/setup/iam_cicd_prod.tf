@@ -28,20 +28,21 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
 }
 
 ##2. Policy for ECR access
-resource "aws_iam_policy" "ecr_policy" {
+resource "aws_iam_policy" "cicd_gh_actions_policy" {
   provider    = aws.prod
   name        = "${aws_iam_role.cicd_gh_actions_role.name}-ecr-policy"
   description = "Allow managing of ECR resources"
-  policy      = data.aws_iam_policy_document.ecr_policy.json
+  policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
 }
-data "aws_iam_policy_document" "ecr_policy" {
+data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   statement {
-    sid       = "ECRAccess"
+    sid       = "GetECRAuthToken"
     effect    = "Allow"
     actions   = ["ecr:GetAuthorizationToken"]
     resources = ["*"]
   }
   statement {
+    sid = "ECRRepositoryPushPull"  
     effect = "Allow"
     actions = [
       "ecr:CompleteLayerUpload",
@@ -57,6 +58,49 @@ data "aws_iam_policy_document" "ecr_policy" {
       aws_ecr_repository.recipe_app_api_proxy.arn,
     ]
   }
+  statement {
+    sid       = "EC2VPCManagement"
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeVpcs",
+      "ec2:CreateTags",
+      "ec2:CreateVpc",
+      "ec2:DeleteVpc",
+      "ec2:DescribeSecurityGroups",
+      "ec2:DeleteSubnet",
+      "ec2:DeleteSecurityGroup",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DetachInternetGateway",
+      "ec2:DescribeInternetGateways",
+      "ec2:DeleteInternetGateway",
+      "ec2:DetachNetworkInterface",
+      "ec2:DescribeVpcEndpoints",
+      "ec2:DescribeRouteTables",
+      "ec2:DeleteRouteTable",
+      "ec2:DeleteVpcEndpoints",
+      "ec2:DisassociateRouteTable",
+      "ec2:DeleteRoute",
+      "ec2:DescribePrefixLists",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcAttribute",
+      "ec2:DescribeNetworkAcls",
+      "ec2:AssociateRouteTable",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupEgress",
+      "ec2:CreateSecurityGroup",
+      "ec2:AuthorizeSecurityGroupEgress",
+      "ec2:CreateVpcEndpoint",
+      "ec2:ModifySubnetAttribute",
+      "ec2:CreateSubnet",
+      "ec2:CreateRoute",
+      "ec2:CreateRouteTable",
+      "ec2:CreateInternetGateway",
+      "ec2:AttachInternetGateway",
+      "ec2:ModifyVpcAttribute",
+      "ec2:RevokeSecurityGroupIngress",
+    ]
+    resources = ["*"]
+  }
   # statement {
   #   sid    = "S3FullAccess"
   #   effect = "Allow"
@@ -67,21 +111,8 @@ data "aws_iam_policy_document" "ecr_policy" {
   #   resources = ["*"]
   # }
 }
-resource "aws_iam_role_policy_attachment" "ecr_policy" {
+resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.ecr_policy.arn
+  policy_arn = aws_iam_policy.cicd_gh_actions_policy.arn
 }
-
-# ##3. Policy for Teraform backend to S3 and DynamoDB access
-# resource "aws_iam_policy" "cicd_tf_backend_policy" {
-#   provider    = aws.prod
-#   name        = "${aws_iam_role.cicd_gh_actions_role.name}-tf-backend-policy"
-#   description = "Allow access to S3 & DynamoDB for TF backend resources"
-#   policy      = data.aws_iam_policy_document.tf_backend_access_policy.json
-# }
-# resource "aws_iam_role_policy_attachment" "cicd_tf_backend_policy" {
-#   provider   = aws.prod
-#   role       = aws_iam_role.cicd_gh_actions_role.name
-#   policy_arn = aws_iam_policy.cicd_tf_backend_policy.arn
-# }
