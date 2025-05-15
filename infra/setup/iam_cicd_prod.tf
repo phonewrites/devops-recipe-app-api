@@ -1,3 +1,4 @@
+# Main role in prod account for deployments
 resource "aws_iam_role" "cicd_gh_actions_role" {
   provider           = aws.prod
   name               = "cicd-gh-actions-role"
@@ -31,7 +32,7 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
 resource "aws_iam_policy" "cicd_gh_actions_policy" {
   provider    = aws.prod
   name        = "${aws_iam_role.cicd_gh_actions_role.name}-policy"
-  description = "Allow managing of ECR resources"
+  description = "Allow managing resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
 }
 data "aws_iam_policy_document" "cicd_gh_actions_policy" {
