@@ -13,20 +13,20 @@ permissions:
 
 jobs:
 
-  # test-lint:
-  #   uses: ./.github/workflows/test-lint.yml
-  #   name: Test and Lint
-  #   secrets:
-  #     DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
-  #     DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  test-lint:
+    uses: ./.github/workflows/test-lint.yml
+    name: Test and Lint
+    secrets:
+      DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
-#    needs: [test-lint]
+    needs: [test-lint]
     steps:
 
-      # Prep      
+      # Preparation
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set the terraform workspace variable
@@ -37,43 +37,43 @@ jobs:
           echo "staging" > .workspace
           fi
 
-      # Chaining roles to the prod account
+      # AWS authentication – chaining roles to the prod account
       - name: Assume the initial role in mgmt account using OIDC 
         uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
           role-to-assume: ${{ secrets.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
-          mask-aws-account-id: true
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v4.2.1
         with:
           role-to-assume: ${{ secrets.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
-          mask-aws-account-id: true
           role-chaining: true     
 
-      # # Login, build, tag and push Docker images to AWS ECR          
-      # - name: Login to ECR using the assumed role credentials 
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v2.0.1       
-      # - name: Build and push the API app image
-      #   uses: docker/build-push-action@v6.16.0
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: |
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
-      # - name: Build and push the API proxy image
-      #   uses: docker/build-push-action@v6.16.0
-      #   with:
-      #     context: ./proxy
-      #     push: true
-      #     tags: |
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
+      # Build, tag and push Docker images to AWS ECR          
+      - name: Login to ECR using the assumed role credentials 
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+      - name: Mask ECR registry URI
+        run: echo "::add-mask::${{ steps.login-ecr.outputs.registry }}"         
+      - name: Build and push the API app image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
+      - name: Build and push the API proxy image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: ./proxy
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
 
       # Apply final config to prod account       
       - name: Terraform Apply
