@@ -1,6 +1,10 @@
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
 variable "prefix" {
   description = "Prefix for AWS resources to distinguish this stack"
-  default     = "recipe-api-"
+  default     = "recipe-api"
 }
 
 variable "project" {
