@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
   }
   statement {
-    sid    = "EC2VPCManagement"
+    sid    = "VPCManagement"
     effect = "Allow"
     actions = [
       "ec2:DescribeVpcs",

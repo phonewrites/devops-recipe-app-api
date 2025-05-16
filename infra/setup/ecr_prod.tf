@@ -1,4 +1,4 @@
-# ECR repos in prod for storing Docker images #
+# ECR repos in prod account for storing Docker images #
 resource "aws_ecr_repository" "recipe_app_api_app" {
   name                 = "recipe-app-api-app"
   provider             = aws.prod

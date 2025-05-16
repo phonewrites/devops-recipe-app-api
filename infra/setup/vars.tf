@@ -8,6 +8,7 @@ variable "tf_state_lock_table" {
   default     = "terraform-state-locks"
 }
 
+# Resource tags
 variable "project" {
   description = "Project name for tagging resources"
   default     = "devops-recipe-app-api"

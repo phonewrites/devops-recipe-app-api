@@ -28,7 +28,6 @@ provider "aws" {
       environment = terraform.workspace
       project     = var.project
       contact     = var.contact
-      #   managed_by    = "Terraform/setup"
     }
   }
 }
@@ -43,7 +42,6 @@ provider "aws" {
       environment = terraform.workspace
       project     = var.project
       contact     = var.contact
-      #   managed_by    = "Terraform/setup"
     }
   }
 }
