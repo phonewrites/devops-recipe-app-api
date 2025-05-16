@@ -178,9 +178,9 @@
 
 
 resource "aws_s3_bucket" "tags_test" {
-  bucket = "tags-test-${data.aws_caller_identity.current.account_id}-${data.aws_caller_identity.current.user_id}"
+  bucket        = "tags-test-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.region}"
   force_destroy = true
   tags = {
-    Name        = "tags-test-bucket"
+    Name = "tags-test-bucket"
   }
 }
