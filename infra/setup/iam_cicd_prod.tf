@@ -77,7 +77,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "ec2:DetachNetworkInterface",
       "ec2:DescribeVpcEndpoints",
       "ec2:DescribeRouteTables",
-      "ec2:DescribeAvailabilityZones",#for data.aws_availability_zones
+      "ec2:DescribeAvailabilityZones", #for data.aws_availability_zones
       "ec2:DeleteRouteTable",
       "ec2:DeleteVpcEndpoints",
       "ec2:DisassociateRouteTable",
