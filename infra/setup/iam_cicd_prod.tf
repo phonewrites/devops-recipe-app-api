@@ -77,6 +77,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "ec2:DetachNetworkInterface",
       "ec2:DescribeVpcEndpoints",
       "ec2:DescribeRouteTables",
+      "ec2:DescribeAvailabilityZones",#for data.aws_availability_zones
       "ec2:DeleteRouteTable",
       "ec2:DeleteVpcEndpoints",
       "ec2:DisassociateRouteTable",
@@ -102,15 +103,15 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-  # statement {
-  #   sid    = "S3FullAccess"
-  #   effect = "Allow"
-  #   actions = [
-  #     "s3:*",
-  #     "s3-object-lambda:*"
-  #   ]
-  #   resources = ["*"]
-  # }
+  statement {
+    sid    = "S3FullAccess"
+    effect = "Allow"
+    actions = [
+      "s3:*",
+      "s3-object-lambda:*"
+    ]
+    resources = ["*"]
+  }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   provider   = aws.prod
