@@ -5,7 +5,6 @@ resource "aws_db_subnet_group" "main" {
     Name = "${local.prefix}-db-subnet-group"
   }
 }
-
 resource "aws_security_group" "rds_inbound_access" {
   name        = "${local.prefix}-rds-inbound-access"
   description = "Access to the RDS DB instance"
@@ -23,12 +22,12 @@ resource "aws_security_group" "rds_inbound_access" {
   }
 }
 resource "aws_db_instance" "main" {
-  identifier                 = "${local.prefix}-db"
-  db_name                    = local.prefix
-  allocated_storage          = 20
-  storage_type               = "gp2"
-  engine                     = "postgres"
-  engine_version             = "15.3"
+  identifier        = "${local.prefix}-db"
+  db_name           = local.prefix
+  allocated_storage = 20
+  storage_type      = "gp2"
+  engine            = "postgres"
+  # engine_version             = "15.3"
   auto_minor_version_upgrade = true
   instance_class             = "db.t4g.micro"
   username                   = var.db_username
@@ -41,4 +40,8 @@ resource "aws_db_instance" "main" {
   tags = {
     Name = "${local.prefix}-db"
   }
+}
+
+resource "aws_iam_service_linked_role" "rds_role" {
+  aws_service_name = "rds.amazonaws.com"
 }
