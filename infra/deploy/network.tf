@@ -104,7 +104,7 @@ resource "aws_security_group" "endpoint_access" {
   }
 }
 resource "aws_vpc_security_group_ingress_rule" "endpoint_access" {
-  security_group_id = aws_security_group.rds_inbound_access.id
+  security_group_id = aws_security_group.endpoint_access.id
   cidr_ipv4         = aws_vpc.main.cidr_block
   from_port         = 443
   to_port           = 443
