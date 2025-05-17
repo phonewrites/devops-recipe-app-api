@@ -15,7 +15,7 @@ variable "contact" {
 
 variable "db_username" {
   description = "Username for the recipe app api database"
-  default     = "recipeapp-db-user"
+  default     = "recipeappdbuser"
 }
 variable "db_password" {
   description = "Password for the Terraform database"
