@@ -90,12 +90,6 @@ resource "aws_security_group" "endpoint_access" {
   name        = "${local.prefix}-endpoint-access" #test name change
   description = "Access to VPC endpoints"
   vpc_id      = aws_vpc.main.id
-  # ingress {
-  #   cidr_blocks = [aws_vpc.main.cidr_block]
-  #   from_port   = 443
-  #   to_port     = 443
-  #   protocol    = "tcp"
-  # }
   lifecycle {
     create_before_destroy = true #Fix "Still destroying..." issue
   }
