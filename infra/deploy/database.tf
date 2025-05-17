@@ -10,9 +10,10 @@ resource "aws_security_group" "rds_inbound_access" {
   description = "Access to the RDS DB instance"
   vpc_id      = aws_vpc.main.id
   ingress {
-    protocol  = "tcp"
-    from_port = 5432
-    to_port   = 5432
+    cidr_blocks = []
+    protocol    = "tcp"
+    from_port   = 5432
+    to_port     = 5432
   }
   lifecycle {
     create_before_destroy = true #Fix "Still destroying..." issue
@@ -21,6 +22,15 @@ resource "aws_security_group" "rds_inbound_access" {
     Name = "${local.prefix}-rds-inbound-access"
   }
 }
+# resource "aws_vpc_security_group_ingress_rule" "rds_inbound_access" {
+#   security_group_id = aws_security_group.rds_inbound_access.id
+#   cidr_ipv4         = ""
+#   from_port         = 5432
+#   to_port           = 5432
+#   ip_protocol       = "tcp"
+# }
+
+
 # resource "aws_db_instance" "main" {
 #   identifier        = "${local.prefix}-db"
 #   db_name           = replace(local.prefix, "-", "")
@@ -40,8 +50,4 @@ resource "aws_security_group" "rds_inbound_access" {
 #   tags = {
 #     Name = "${local.prefix}-db"
 #   }
-# }
-
-# resource "aws_iam_service_linked_role" "rds_role" {
-#   aws_service_name = "rds.amazonaws.com"
 # }
