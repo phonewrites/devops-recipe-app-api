@@ -104,6 +104,21 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     resources = ["*"]
   }
   statement {
+    sid    = "RDSManagement"
+    effect = "Allow"
+    actions = [
+      "rds:DescribeDBSubnetGroups",
+      "rds:DescribeDBInstances",
+      "rds:CreateDBSubnetGroup",
+      "rds:DeleteDBSubnetGroup",
+      "rds:CreateDBInstance",
+      "rds:DeleteDBInstance",
+      "rds:ListTagsForResource",
+      "rds:ModifyDBInstance"
+    ]
+    resources = ["*"]
+  }
+  statement {
     sid    = "S3FullAccess"
     effect = "Allow"
     actions = [
@@ -112,6 +127,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
+
 }
 resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   provider   = aws.prod
