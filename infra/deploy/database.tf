@@ -42,6 +42,6 @@ resource "aws_security_group" "rds_inbound_access" {
 #   }
 # }
 
-resource "aws_iam_service_linked_role" "rds_role" {
-  aws_service_name = "rds.amazonaws.com"
-}
+# resource "aws_iam_service_linked_role" "rds_role" {
+#   aws_service_name = "rds.amazonaws.com"
+# }
