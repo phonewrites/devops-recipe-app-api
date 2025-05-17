@@ -10,7 +10,7 @@ resource "aws_security_group" "rds_inbound_access" {
   description = "Access to the RDS DB instance"
   vpc_id      = aws_vpc.main.id
   ingress {
-    cidr_blocks = []
+    cidr_blocks = [for cidr in local.private_cidrs : cidr]
     protocol    = "tcp"
     from_port   = 5432
     to_port     = 5432
