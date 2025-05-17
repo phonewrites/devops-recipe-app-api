@@ -22,13 +22,13 @@ resource "aws_security_group" "rds_inbound_access" {
     Name = "${local.prefix}-rds-inbound-access"
   }
 }
-resource "aws_vpc_security_group_ingress_rule" "rds_inbound_rules" {
-  security_group_id = aws_security_group.rds_inbound_access.id
-  cidr_ipv4         = "10.127.128.0/24"
-  from_port         = 5432
-  to_port           = 5432
-  ip_protocol       = "tcp"
-}
+# resource "aws_vpc_security_group_ingress_rule" "rds_inbound_rules" {
+#   security_group_id = aws_security_group.rds_inbound_access.id
+#   cidr_ipv4         = "10.127.128.0/24"
+#   from_port         = 5432
+#   to_port           = 5432
+#   ip_protocol       = "tcp"
+# }
 
 
 # resource "aws_db_instance" "main" {
