@@ -9,12 +9,6 @@ resource "aws_security_group" "rds_inbound_access" {
   name        = "${local.prefix}-rds-inbound-access"
   description = "Access to the RDS DB instance"
   vpc_id      = aws_vpc.main.id
-  # ingress {
-  #   cidr_blocks = [for cidr in local.private_cidrs : cidr]
-  #   protocol    = "tcp"
-  #   from_port   = 5432
-  #   to_port     = 5432
-  # }
   lifecycle {
     create_before_destroy = true #Fix "Still destroying..." issue
   }
@@ -22,13 +16,14 @@ resource "aws_security_group" "rds_inbound_access" {
     Name = "${local.prefix}-rds-inbound-access"
   }
 }
-resource "aws_vpc_security_group_ingress_rule" "rds_inbound_rules" {
+resource "aws_vpc_security_group_ingress_rule" "rds_inbound_access" {
   for_each          = toset(local.private_cidrs)
   security_group_id = aws_security_group.rds_inbound_access.id
   cidr_ipv4         = each.value
   from_port         = 5432
   to_port           = 5432
   ip_protocol       = "tcp"
+  description       = "PostgreSQL inbound"
 }
 
 

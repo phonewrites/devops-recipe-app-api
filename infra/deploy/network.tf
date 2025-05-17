@@ -90,12 +90,12 @@ resource "aws_security_group" "endpoint_access" {
   name        = "${local.prefix}-endpoint-access" #test name change
   description = "Access to VPC endpoints"
   vpc_id      = aws_vpc.main.id
-  ingress {
-    cidr_blocks = [aws_vpc.main.cidr_block]
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-  }
+  # ingress {
+  #   cidr_blocks = [aws_vpc.main.cidr_block]
+  #   from_port   = 443
+  #   to_port     = 443
+  #   protocol    = "tcp"
+  # }
   lifecycle {
     create_before_destroy = true #Fix "Still destroying..." issue
   }
@@ -103,6 +103,15 @@ resource "aws_security_group" "endpoint_access" {
     Name = "${local.prefix}-endpoint-access"
   }
 }
+resource "aws_vpc_security_group_ingress_rule" "endpoint_access" {
+  security_group_id = aws_security_group.rds_inbound_access.id
+  cidr_ipv4         = aws_vpc.main.cidr_block
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  description       = "HTTPS inbound"
+}
+
 resource "aws_vpc_endpoint" "interface_endpoint" {
   for_each            = local.interface_endpoints
   vpc_id              = aws_vpc.main.id
