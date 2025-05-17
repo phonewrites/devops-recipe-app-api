@@ -96,9 +96,12 @@ resource "aws_security_group" "endpoint_access" {
     to_port     = 443
     protocol    = "tcp"
   }
+  lifecycle {
+    create_before_destroy = true #Fix "Still destroying..." issue
+  }
   tags = {
     Name = "${local.prefix}-endpoint-access"
-  }  
+  }
 }
 resource "aws_vpc_endpoint" "interface_endpoint" {
   for_each            = local.interface_endpoints

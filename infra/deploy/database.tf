@@ -1,13 +1,13 @@
 resource "aws_db_subnet_group" "main" {
-  name = "${local.prefix}-main"
-  subnet_ids          = [for sn in aws_subnet.private : sn.id]
+  name       = "${local.prefix}-main"
+  subnet_ids = [for sn in aws_subnet.private : sn.id]
   tags = {
     Name = "${local.prefix}-db-subnet-group"
   }
 }
 
 resource "aws_security_group" "rds" {
-  description = "Access to the RDS DB instance."
+  description = "Access to the RDS DB instance"
   name        = "${local.prefix}-rds-inbound-access"
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -16,13 +16,13 @@ resource "aws_security_group" "rds" {
     to_port   = 5432
   }
   tags = {
-  Name        = "${local.prefix}-rds-inbound-access"
+    Name = "${local.prefix}-rds-inbound-access"
   }
 }
 
 resource "aws_db_instance" "main" {
   identifier                 = "${local.prefix}-db"
-  db_name                    = "${local.prefix}"
+  db_name                    = local.prefix
   allocated_storage          = 20
   storage_type               = "gp2"
   engine                     = "postgres"
