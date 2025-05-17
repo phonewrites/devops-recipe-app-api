@@ -15,6 +15,9 @@ resource "aws_security_group" "rds" {
     from_port = 5432
     to_port   = 5432
   }
+  lifecycle {
+    create_before_destroy = true #Fix "Still destroying..." issue
+  }
   tags = {
     Name = "${local.prefix}-rds-inbound-access"
   }
