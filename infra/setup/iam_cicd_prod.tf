@@ -92,6 +92,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "ec2:CreateSecurityGroup",
       "ec2:AuthorizeSecurityGroupEgress",
       "ec2:CreateVpcEndpoint",
+      "ec2:ModifyVpcEndpoint",
       "ec2:ModifySubnetAttribute",
       "ec2:CreateSubnet",
       "ec2:CreateRoute",

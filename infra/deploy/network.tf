@@ -87,7 +87,7 @@ resource "aws_subnet" "private" {
 
 # AWS VPC Endpoints setup for ECR, CloudWatch, Systems Manager & S3
 resource "aws_security_group" "endpoint_access" {
-  name        = "${local.prefix}-endpoint-access" #test name change
+  name        = "${local.prefix}-endpoint-access-sg" #test name change
   description = "Access to VPC endpoints"
   vpc_id      = aws_vpc.main.id
   ingress {
