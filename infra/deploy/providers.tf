@@ -1,8 +1,8 @@
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
-# locals {
-#   prefix = "${var.prefix}-${terraform.workspace}"
-# }
+locals {
+  prefix = "recipe-api-${terraform.workspace}"
+}
 
 terraform {
   required_providers {

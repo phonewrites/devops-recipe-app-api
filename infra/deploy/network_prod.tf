@@ -4,13 +4,13 @@ resource "aws_vpc" "main" {
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags = {
-    Name = "${var.prefix}-vpc"
+    Name = "${local.prefix}-vpc"
   }
 }
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
   tags = {
-    Name = "${var.prefix}-igw"
+    Name = "${local.prefix}-igw"
   }
 }
 
@@ -214,14 +214,14 @@ resource "aws_subnet" "public" {
   availability_zone       = each.key
   map_public_ip_on_launch = true
   tags = {
-    Name = "${var.prefix}-pub-${substr(each.key, length(each.key) - 1, 1)}"
+    Name = "${local.prefix}-pub-${substr(each.key, length(each.key) - 1, 1)}"
   }
 }
 resource "aws_route_table" "public" {
   for_each = aws_subnet.public
   vpc_id   = aws_vpc.main.id
   tags = {
-    Name = "${var.prefix}-pub-${substr(each.key, length(each.key) - 1, 1)}"
+    Name = "${local.prefix}-pub-${substr(each.key, length(each.key) - 1, 1)}"
   }
 }
 resource "aws_route_table_association" "public" {
@@ -247,14 +247,14 @@ resource "aws_subnet" "private" {
   availability_zone = each.key
 
   tags = {
-    Name = "${var.prefix}-pri-${substr(each.key, length(each.key) - 1, 1)}"
+    Name = "${local.prefix}-pri-${substr(each.key, length(each.key) - 1, 1)}"
   }
 }
 
 # AWS VPC Endpoints setup for ECR, CloudWatch, Systems Manager & S3
 resource "aws_security_group" "endpoint_access" {
   description = "Access to endpoints"
-  name        = "${var.prefix}-endpoint-access"
+  name        = "${local.prefix}-endpoint-access"
   vpc_id      = aws_vpc.main.id
   ingress {
     cidr_blocks = [aws_vpc.main.cidr_block]
@@ -272,7 +272,7 @@ resource "aws_vpc_endpoint" "interface_endpoint" {
   subnet_ids          = [for sn in aws_subnet.private : sn.id]
   security_group_ids  = [aws_security_group.endpoint_access.id]
   tags = {
-    Name = "${var.prefix}-${each.key}-endpoint"
+    Name = "${local.prefix}-${each.key}-endpoint"
   }
 }
 resource "aws_vpc_endpoint" "s3" {
@@ -283,7 +283,7 @@ resource "aws_vpc_endpoint" "s3" {
     aws_vpc.main.default_route_table_id
   ]
   tags = {
-    Name = "${var.prefix}-s3-endpoint"
+    Name = "${local.prefix}-s3-endpoint"
   }
 }
 
