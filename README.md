@@ -77,7 +77,8 @@ docker compose run --rm terraform -chdir=setup apply
 ```
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
-
+## Terraform deploy setup
+Changes: Network config terraform code is made DRY.
 
 
 
@@ -89,26 +90,6 @@ Sources:
 https://github.com/github/gitignore/blob/main/Terraform.gitignore
 
 
-TEST - REMOVE LATER
-------------
-{
-  "title": "Coconut sweet",
-  "time_minutes": "60",
-  "price": "10.00",
-  "link": "https://example.com",
-  "tags": [
-    {
-      "name": "sweets"
-    }
-  ],
-  "ingredients": [
-    {
-      "name": "coconut"
-    }
-  ],
-  "description": "Oriental coconut sweets dev env"
-}
-------------
 
 ############# MY EDITS TILL HERE #####
 
