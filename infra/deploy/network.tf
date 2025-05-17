@@ -87,7 +87,7 @@ resource "aws_subnet" "private" {
 
 # AWS VPC Endpoints setup for ECR, CloudWatch, Systems Manager & S3
 resource "aws_security_group" "endpoint_access" {
-  name        = "${local.prefix}-endpoint-access-sg" #test name change
+  name        = "${local.prefix}-endpoint-access" #test name change
   description = "Access to VPC endpoints"
   vpc_id      = aws_vpc.main.id
   ingress {
@@ -111,10 +111,6 @@ resource "aws_vpc_endpoint" "interface_endpoint" {
   private_dns_enabled = true
   subnet_ids          = [for sn in aws_subnet.private : sn.id]
   security_group_ids  = [aws_security_group.endpoint_access.id]
-  #Test "Still destroying..." issue
-  # lifecycle {
-  #   replace_triggered_by = [aws_security_group.endpoint_access]
-  # }
   tags = {
     Name = "${local.prefix}-${each.key}-endpoint"
   }
