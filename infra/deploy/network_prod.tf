@@ -181,6 +181,9 @@ resource "aws_internet_gateway" "main" {
 
 ############## TRY DRY
 locals {
+  azs_for_public_subnets  = slice(data.aws_availability_zones.available.names, 0, length(local.public_cidrs))
+  azs_for_private_subnets = slice(data.aws_availability_zones.available.names, 0, length(local.private_cidrs))
+
   # /24‐sized CIDRs for different AZs
   public_cidrs = [ #Subnets begin in 3rd octet at 0,1...
     "10.127.0.0/24",
@@ -203,7 +206,7 @@ locals {
 # Public Subnets for load balancer public access
 resource "aws_subnet" "public" {
   for_each = {
-    for idx, az in data.aws_availability_zones.available.names :
+    for idx, az in local.azs_for_public_subnets :
     az => local.public_cidrs[idx]
   }
   vpc_id                  = aws_vpc.main.id
@@ -236,7 +239,7 @@ resource "aws_route" "public_internet_access" {
 # Private Subnets for internal access only
 resource "aws_subnet" "private" {
   for_each = {
-    for idx, az in data.aws_availability_zones.available.names :
+    for idx, az in local.azs_for_private_subnets :
     az => local.private_cidrs[idx]
   }
   vpc_id            = aws_vpc.main.id
