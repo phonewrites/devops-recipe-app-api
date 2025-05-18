@@ -56,22 +56,22 @@ jobs:
       - name: Login to ECR using the assumed role credentials 
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2.0.1       
-      # - name: Build and push the API app image
-      #   uses: docker/build-push-action@v6.16.0
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: |
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
-      # - name: Build and push the API proxy image
-      #   uses: docker/build-push-action@v6.16.0
-      #   with:
-      #     context: ./proxy
-      #     push: true
-      #     tags: |
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
-      #       ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
+      - name: Build and push the API app image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
+      - name: Build and push the API proxy image
+        uses: docker/build-push-action@v6.16.0
+        with:
+          context: ./proxy
+          push: true
+          tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_PROXY_REPOSITORY_NAME }}:latest
 
       # Apply final config to prod account       
       - name: Terraform Apply
