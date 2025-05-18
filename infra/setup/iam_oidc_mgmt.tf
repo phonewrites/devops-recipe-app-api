@@ -13,7 +13,7 @@ resource "aws_iam_openid_connect_provider" "github_actions" {
 # Initial role assumed by GitHub Actions workflows during deployments
 resource "aws_iam_role" "oidc_github_actions_role" {
   name               = "oidc-gh-actions-role"
-  description        = "Initial role assumed by GitHub Actions workflows during deployments."
+  description        = "Initial role assumed by GitHub Actions workflows during deployments"
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy.json
   depends_on         = [aws_iam_openid_connect_provider.github_actions]
 }

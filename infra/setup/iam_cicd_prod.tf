@@ -2,6 +2,7 @@
 resource "aws_iam_role" "cicd_gh_actions_role" {
   provider           = aws.prod
   name               = "cicd-gh-actions-role"
+  description        = "Main role used by GitHub Actions workflows for deployments"
   assume_role_policy = data.aws_iam_policy_document.cicd_assume_role_policy.json
 }
 data "aws_iam_policy_document" "cicd_assume_role_policy" {
