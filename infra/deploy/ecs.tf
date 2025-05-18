@@ -150,6 +150,9 @@ resource "aws_security_group" "ecs_access" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  tags = {
+    Name = "${local.prefix}-ecs-access"
+  }
 }
 
 ######### TESTING ################################
