@@ -1,3 +1,4 @@
+# RDS Database resources
 resource "aws_db_subnet_group" "main" {
   name       = "${local.prefix}-main"
   subnet_ids = [for sn in aws_subnet.private : sn.id]
