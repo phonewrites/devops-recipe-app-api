@@ -188,7 +188,8 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "logs:DescribeLogGroups",
       "logs:CreateLogGroup",
       "logs:TagResource",
-      "logs:ListTagsLogGroup"
+      "logs:ListTagsLogGroup",
+      "logs:ListTagsForResource",
     ]
     resources = ["*"]
   }
