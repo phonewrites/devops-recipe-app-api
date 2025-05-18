@@ -121,6 +121,7 @@ resource "aws_ecs_cluster" "main" {
 #     cpu_architecture        = "X86_64"
 #   }
 # }
+######### TESTING ################################
 
 resource "aws_security_group" "ecs_access" {
   name        = "${local.prefix}-ecs-access"
@@ -130,59 +131,58 @@ resource "aws_security_group" "ecs_access" {
     create_before_destroy = true #Fix "Still destroying..." issue
   }
   # Outbound access to endpoints
-  egress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  # RDS connectivity
-  egress {
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = local.private_cidrs
-  }
-  # HTTP inbound access
-  ingress {
-    from_port   = 8000
-    to_port     = 8000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 443
+#     to_port     = 443
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
+#   # RDS connectivity
+#   egress {
+#     from_port   = 5432
+#     to_port     = 5432
+#     protocol    = "tcp"
+#     cidr_blocks = local.private_cidrs
+#   }
+#   # HTTP inbound access
+#   ingress {
+#     from_port   = 8000
+#     to_port     = 8000
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
   tags = {
     Name = "${local.prefix}-ecs-access"
   }
 }
 
 ######### TESTING ################################
-
-# resource "aws_vpc_security_group_egress_rule" "endpoints_outbound_access" {
-#   security_group_id = aws_security_group.ecs_access.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 443
-#   to_port           = 443
-#   ip_protocol       = "tcp"
-#   description       = "Outbound access to endpoints"
-# }
-# resource "aws_vpc_security_group_egress_rule" "rds_outbound_access" {
-#   security_group_id = aws_security_group.ecs_access.id
-#     #cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 5432
-#   to_port           = 5432
-#   ip_protocol       = "tcp"
-#   description       = "Outbound for RDS connectivity"
-# }
-
-# resource "aws_vpc_security_group_ingress_rule" "http_inbound_access" {
-#   security_group_id = aws_security_group.ecs_access.id
-#   cidr_ipv4         = "0.0.0.0/0"
-#   from_port         = 8000
-#   to_port           = 8000
-#   ip_protocol       = "tcp"
-#   description       = "HTTP inbound access"
-# }
-
+resource "aws_vpc_security_group_egress_rule" "endpoints_outbound_access" {
+  security_group_id = aws_security_group.ecs_access.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  description       = "Outbound access to endpoints"
+}
+resource "aws_vpc_security_group_egress_rule" "rds_outbound_access" {
+  for_each          = toset(local.private_cidrs)
+  security_group_id = aws_security_group.ecs_access.id
+    #cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = each.value
+  from_port         = 5432
+  to_port           = 5432
+  ip_protocol       = "tcp"
+  description       = "Outbound for RDS connectivity"
+}
+resource "aws_vpc_security_group_ingress_rule" "http_inbound_access" {
+  security_group_id = aws_security_group.ecs_access.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 8000
+  to_port           = 8000
+  ip_protocol       = "tcp"
+  description       = "HTTP inbound access"
+}
 ######### TESTING ################################
 
 
