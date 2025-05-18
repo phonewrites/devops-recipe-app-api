@@ -6,6 +6,7 @@ services:
       args:
         - DEV=true
     ports:
+   #[port exposed to outside world (host)]:[port used internally by ctr]
       - "8000:8000"
     volumes:
       - ./app:/app

@@ -1,3 +1,6 @@
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
 # S3 bucket & DynamoDB table are created+managed outside Terraform
 variable "tf_state_bucket" {
   description = "Name of S3 bucket in AWS for storing TF state"

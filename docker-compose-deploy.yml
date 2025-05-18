@@ -1,4 +1,3 @@
-# version: "3.9" # version attribute is obsolete 
 services:
   app:
     build:
@@ -34,6 +33,7 @@ services:
     depends_on:
       - app
     ports:
+    #Host Port:Container Port
       - 80:8000
     volumes:
       - static-data:/vol/static
