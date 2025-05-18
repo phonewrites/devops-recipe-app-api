@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
   }
   statement {
-    sid    = "VPCManagement"
+    sid    = "ManageVPC"
     effect = "Allow"
     actions = [
       "ec2:DescribeVpcs",
@@ -106,7 +106,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     resources = ["*"]
   }
   statement {
-    sid    = "RDSManagement"
+    sid    = "ManageRDS"
     effect = "Allow"
     actions = [
       "rds:DescribeDBSubnetGroups",
@@ -121,6 +121,76 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
+  statement { #Allows RDS to create role needed for first deployment
+    sid    = "CreateRDSServiceLinkedRole"
+    effect = "Allow"
+    actions = [
+      "iam:CreateServiceLinkedRole",
+      "iam:DeleteServiceLinkedRole"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values   = ["rds.amazonaws.com"]
+    }
+  }
+  statement {
+    sid    = "ManageECS"
+    effect = "Allow"
+    actions = [
+      "ecs:DescribeClusters",
+      "ecs:DeregisterTaskDefinition",
+      "ecs:DeleteCluster",
+      "ecs:DescribeServices",
+      "ecs:UpdateService",
+      "ecs:DeleteService",
+      "ecs:DescribeTaskDefinition",
+      "ecs:CreateService",
+      "ecs:RegisterTaskDefinition",
+      "ecs:CreateCluster",
+      "ecs:UpdateCluster",
+      "ecs:TagResource",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ManageIAM"
+    effect = "Allow"
+    actions = [
+      "iam:ListInstanceProfilesForRole",
+      "iam:ListAttachedRolePolicies",
+      "iam:DeleteRole",
+      "iam:ListPolicyVersions",
+      "iam:DeletePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:GetRole",
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy",
+      "iam:CreateRole",
+      "iam:CreatePolicy",
+      "iam:AttachRolePolicy",
+      "iam:TagRole",
+      "iam:TagPolicy",
+      "iam:PassRole"
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ManageCWLogs"
+    effect = "Allow"
+    actions = [
+      "logs:DeleteLogGroup",
+      "logs:DescribeLogGroups",
+      "logs:CreateLogGroup",
+      "logs:TagResource",
+      "logs:ListTagsLogGroup"
+    ]
+    resources = ["*"]
+  }
   statement {
     sid    = "S3FullAccess"
     effect = "Allow"
@@ -130,7 +200,6 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-
 }
 resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   provider   = aws.prod
