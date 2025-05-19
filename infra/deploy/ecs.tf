@@ -15,7 +15,7 @@ resource "aws_ecs_cluster" "main" {
 #   network_configuration {
 #     assign_public_ip = true
 #     subnets = [for sn in aws_subnet.aws_subnet.public : sn.id]
-#     security_groups = [aws_security_group.ecs_service_access.id]
+#     security_groups = [aws_security_group.ecs_access.id]
 #   }
 # }
 
