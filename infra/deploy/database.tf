@@ -39,7 +39,7 @@ resource "aws_security_group" "rds_access" {
     Name = "${local.prefix}-rds-inbound-access"
   }
 }
-resource "aws_vpc_security_group_ingress_rule" "rds_inbound_access" {
+resource "aws_vpc_security_group_ingress_rule" "inbound_postgres_access" {
   security_group_id            = aws_security_group.rds_access.id
   from_port                    = 5432
   to_port                      = 5432

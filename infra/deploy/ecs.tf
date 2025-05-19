@@ -155,9 +155,8 @@ resource "aws_security_group" "ecs_access" {
     Name = "${local.prefix}-ecs-access"
   }
 }
-
 ######### TESTING ################################
-resource "aws_vpc_security_group_egress_rule" "endpoints_outbound_access" {
+resource "aws_vpc_security_group_egress_rule" "outbound_endpoints_access" {
   security_group_id = aws_security_group.ecs_access.id
   from_port         = 443
   to_port           = 443
@@ -165,7 +164,7 @@ resource "aws_vpc_security_group_egress_rule" "endpoints_outbound_access" {
   cidr_ipv4         = "0.0.0.0/0"
   description       = "Outbound HTTPS traffic to the endpoints"
 }
-resource "aws_vpc_security_group_egress_rule" "rds_outbound_access" {
+resource "aws_vpc_security_group_egress_rule" "outbound_postgres_access" {
   for_each          = toset(local.private_cidrs)
   security_group_id = aws_security_group.ecs_access.id
   #cidr_ipv4         = "0.0.0.0/0"
@@ -175,7 +174,7 @@ resource "aws_vpc_security_group_egress_rule" "rds_outbound_access" {
   cidr_ipv4   = each.value
   description = "Outbound PostgreSQL traffic for RDS connectivity"
 }
-resource "aws_vpc_security_group_ingress_rule" "http_inbound_access" {
+resource "aws_vpc_security_group_ingress_rule" "inbound_app_access" {
   security_group_id = aws_security_group.ecs_access.id
   from_port         = 8000
   to_port           = 8000

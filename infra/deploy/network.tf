@@ -97,7 +97,7 @@ resource "aws_security_group" "endpoint_access" {
     Name = "${local.prefix}-endpoint-access"
   }
 }
-resource "aws_vpc_security_group_ingress_rule" "endpoint_access" {
+resource "aws_vpc_security_group_ingress_rule" "inbound_endpoints_access" {
   security_group_id = aws_security_group.endpoint_access.id
   from_port         = 443
   to_port           = 443
