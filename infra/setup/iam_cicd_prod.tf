@@ -122,20 +122,24 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-  statement { #Allows RDS to create role needed for first deployment
-    sid    = "CreateRDSServiceLinkedRole"
+  statement { #Allows RDS & ECS to create roles needed for first deployments
+    sid    = "CreateServiceLinkedRoles"
     effect = "Allow"
     actions = [
       "iam:CreateServiceLinkedRole",
       "iam:DeleteServiceLinkedRole"
     ]
     resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS"
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
     ]
     condition {
       test     = "StringEquals"
       variable = "iam:AWSServiceName"
-      values   = ["rds.amazonaws.com"]
+      values = [
+        "rds.amazonaws.com",
+        "ecs.amazonaws.com",
+      ]
     }
   }
   statement {
