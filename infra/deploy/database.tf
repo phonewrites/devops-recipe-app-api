@@ -32,7 +32,6 @@ resource "aws_db_subnet_group" "main" {
 }
 resource "aws_iam_service_linked_role" "rds_service_linked_role" {
   aws_service_name = "rds.amazonaws.com"
-  custom_suffix    = local.prefix #not allowed for ecs, try for rds
   description      = "Service-linked role needed by RDS for first deployments"
 }
 resource "aws_security_group" "rds_access" {
