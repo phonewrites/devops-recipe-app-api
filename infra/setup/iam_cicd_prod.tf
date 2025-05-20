@@ -131,8 +131,8 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "iam:DeleteServiceLinkedRole"
     ]
     resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
-      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS*",#try suffix
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS*", #try suffix
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
     ]
     condition {
       test     = "StringEquals"
