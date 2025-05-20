@@ -101,7 +101,7 @@ Once inside the task's API container, run the following command to create a supe
 ```
 python manage.py createsuperuser
 ```
-Test it by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
+Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
 
 
 
