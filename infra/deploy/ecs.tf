@@ -14,13 +14,13 @@ resource "aws_ecs_service" "service" {
   enable_execute_command = true
   network_configuration {
     assign_public_ip = true
-    subnets = [for sn in aws_subnet.aws_subnet.public : sn.id]
-    security_groups = [aws_security_group.ecs_access.id]
+    subnets          = [for sn in aws_subnet.public : sn.id]
+    security_groups  = [aws_security_group.ecs_access.id]
   }
 }
 
 resource "aws_ecs_task_definition" "taskdef" {
-  family                   = "${local.prefix}"
+  family                   = local.prefix
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -72,7 +72,7 @@ resource "aws_ecs_task_definition" "taskdef" {
           logDriver = "awslogs"
           options = {
             awslogs-group         = aws_cloudwatch_log_group.ecs_task_logs.name
-            awslogs-region        = data.aws_region.current.name
+            awslogs-region        = data.aws_region.current.region
             awslogs-stream-prefix = "api"
           }
         }
@@ -145,11 +145,11 @@ resource "aws_vpc_security_group_egress_rule" "outbound_endpoints_access" {
 resource "aws_vpc_security_group_egress_rule" "outbound_postgres_access" {
   for_each          = toset(local.private_cidrs)
   security_group_id = aws_security_group.ecs_access.id
-  from_port   = 5432
-  to_port     = 5432
-  ip_protocol = "tcp"
-  cidr_ipv4   = each.value
-  description = "Outbound PostgreSQL traffic for RDS connectivity"
+  from_port         = 5432
+  to_port           = 5432
+  ip_protocol       = "tcp"
+  cidr_ipv4         = each.value
+  description       = "Outbound PostgreSQL traffic for RDS connectivity"
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_app_access" {
   security_group_id = aws_security_group.ecs_access.id
