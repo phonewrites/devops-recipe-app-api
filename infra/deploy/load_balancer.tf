@@ -24,6 +24,12 @@ resource "aws_lb_listener" "api" {
     target_group_arn = aws_lb_target_group.api.arn
   }
 }
+resource "aws_iam_service_linked_role" "alb_service_linked_role" {
+  aws_service_name = "elasticloadbalancing.amazonaws.com"
+  custom_suffix    = local.prefix #not allowed for ecs, try for rds
+  description      = "Service-linked role needed by the ALB for first deployments"
+}
+
 ##### TESTING
 
 

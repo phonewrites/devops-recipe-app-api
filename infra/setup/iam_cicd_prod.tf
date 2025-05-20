@@ -130,8 +130,9 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "iam:CreateServiceLinkedRole",
     ]
     resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS*", #try suffix
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
       "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForElasticLoadBalancing*", #try suffix
     ]
     condition {
       test     = "StringEquals"
@@ -139,6 +140,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       values = [
         "rds.amazonaws.com",
         "ecs.amazonaws.com",
+        "elasticloadbalancing.amazonaws.com",
       ]
     }
   }
@@ -153,6 +155,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     resources = [
       "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
       "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForElasticLoadBalancing*", #try suffix
     ]
   }
   statement {

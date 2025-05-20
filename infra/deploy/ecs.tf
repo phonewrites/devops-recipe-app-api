@@ -19,8 +19,7 @@ resource "aws_ecs_service" "service" {
 }
 resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
   aws_service_name = "ecs.amazonaws.com"
-  #   custom_suffix    = local.prefix #not allowed for ecs, try for rds
-  description = "Service-linked role needed by ECS for first deployments"
+  description      = "Service-linked role needed by ECS for first deployments"
 }
 resource "aws_ecs_task_definition" "taskdef" {
   family                   = local.prefix
