@@ -18,7 +18,7 @@ resource "aws_db_instance" "main" {
     Name = "${local.prefix}-db"
   }
   lifecycle { #Deletes & replaces the DB instance when SG updates
-    replace_triggered_by = [aws_security_group.rds_inbound_access]
+    replace_triggered_by = [aws_security_group.rds_access]
   }
 }
 resource "aws_db_subnet_group" "main" {
