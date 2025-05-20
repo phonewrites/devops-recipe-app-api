@@ -4,6 +4,7 @@ resource "aws_lb" "api" {
   load_balancer_type = "application"
   subnets            = [for sn in aws_subnet.public : sn.id]
   security_groups    = [aws_security_group.alb_access.id]
+  depends_on         = [aws_iam_service_linked_role.alb_service_linked_role]
 }
 resource "aws_lb_target_group" "api" {
   name        = "${local.prefix}-api"
@@ -26,7 +27,6 @@ resource "aws_lb_listener" "api" {
 }
 resource "aws_iam_service_linked_role" "alb_service_linked_role" {
   aws_service_name = "elasticloadbalancing.amazonaws.com"
-  custom_suffix    = local.prefix #not allowed for ecs, try for rds
   description      = "Service-linked role needed by the ALB for first deployments"
 }
 
