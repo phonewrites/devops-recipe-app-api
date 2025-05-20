@@ -145,7 +145,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     }
   }
   statement {
-    #Delete service-linked roles during terraform destroy
+    #Delete service-linked roles during Destroy workflows
     sid    = "DeleteServiceLinkedRoles"
     effect = "Allow"
     actions = [
