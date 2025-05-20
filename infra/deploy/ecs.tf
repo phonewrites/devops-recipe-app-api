@@ -23,7 +23,7 @@ resource "aws_ecs_service" "service" {
 }
 resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
   aws_service_name = "ecs.amazonaws.com"
-  custom_suffix    = "-${local.prefix}" #try if suffix is supported
+  custom_suffix    = local.prefix #try suffix
   description      = "ECS to create roles needed for first deployments"
 }
 
