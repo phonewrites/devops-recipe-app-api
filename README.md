@@ -31,7 +31,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 >Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api.docs` 
+2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api/docs` 
 
 ### Clearing Storage
 
@@ -71,15 +71,50 @@ Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
 ```
 docker compose run --rm terraform -chdir=setup fmt
-docker compose run --rm terraform -chdir=setup vaidate
+docker compose run --rm terraform -chdir=setup validate
 docker compose run --rm terraform -chdir=setup plan
 docker compose run --rm terraform -chdir=setup apply
 ```
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
 ## Terraform deploy setup
-Changes: Network config terraform code is made DRY.
+Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
+```
+docker compose run --rm terraform -chdir=setup fmt
+docker compose run --rm terraform -chdir=setup validate
+```
 
+After ECS servcie is running successfully, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
+`http://[TASK_PUBLIC_IP]:8000/api/health-check/`
+`http://[TASK_PUBLIC_IP]:8000/admin`
+`http://[TASK_PUBLIC_IP]:8000/api/docs`
+
+Ensure that AWS SessionManager plugin is installed on your local machine. This is required to run `aws ecs execute-command`:
+```
+aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
+    --task [TASK_ID]\
+    --container api \
+    --interactive \
+    --command "/bin/sh"
+```
+Once inside the task's API container, run the following command to create a superuser:
+```
+python manage.py createsuperuser
+```
+Test it by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
+
+
+
+
+
+
+## Major changes compared to the original course code:
+- Using granted instead of aws-vault to use locally configured AWS credentials.
+- Using IAM roles & chaining them from an AWS Management account to the account where the service is actually launched, instead of IAM users (with access keys & secrets, i.e. long-lived creds).
+- Terraform deploy Network config is extendable for an organisation with a bigger VPC, more than 2 tiers of subnets, etc.
+- Terraform code is DRY wherever possible, adding to the extendability from the point above.
+- IAM permissions updated, espcially regarding the Service Linked Roles for RDS & ECS.
+- docker-compose files are modified to work with the changes made above.
 
 
 
