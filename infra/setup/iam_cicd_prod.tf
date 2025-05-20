@@ -123,12 +123,11 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     resources = ["*"]
   }
   statement {
-    #Manage service-linked roles needed for first deployments
+    #Create service-linked roles needed for first deployments
     sid    = "CreateServiceLinkedRoles"
     effect = "Allow"
     actions = [
       "iam:CreateServiceLinkedRole",
-      "iam:DeleteServiceLinkedRole"
     ]
     resources = [
       "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS*", #try suffix
@@ -142,6 +141,19 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
         "ecs.amazonaws.com",
       ]
     }
+  }
+  statement {
+    #Delete service-linked roles during terraform destroy
+    sid    = "DeleteServiceLinkedRoles"
+    effect = "Allow"
+    actions = [
+      "iam:DeleteServiceLinkedRole",
+      "iam:GetServiceLinkedRoleDeletionStatus"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS*", #try suffix
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+    ]
   }
   statement {
     sid    = "ManageECS"

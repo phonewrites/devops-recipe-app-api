@@ -20,6 +20,7 @@ resource "aws_db_instance" "main" {
   lifecycle { #Deletes & replaces the DB instance when SG updates
     replace_triggered_by = [aws_security_group.rds_access]
   }
+  depends_on = [aws_iam_service_linked_role.rds_service_linked_role]
 }
 resource "aws_db_subnet_group" "main" {
   name       = "${local.prefix}-main"
@@ -27,6 +28,12 @@ resource "aws_db_subnet_group" "main" {
   tags = {
     Name = "${local.prefix}-db-subnet-group"
   }
+  depends_on = [aws_iam_service_linked_role.rds_service_linked_role]
+}
+resource "aws_iam_service_linked_role" "rds_service_linked_role" {
+  aws_service_name = "rds.amazonaws.com"
+  custom_suffix    = local.prefix #not allowed for ecs, try for rds
+  description      = "Service-linked role needed by RDS for first deployments"
 }
 resource "aws_security_group" "rds_access" {
   name        = "${local.prefix}-rds-inbound-access"

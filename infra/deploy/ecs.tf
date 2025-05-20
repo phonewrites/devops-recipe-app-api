@@ -2,8 +2,6 @@
 resource "aws_ecs_cluster" "main" {
   name = local.prefix
 }
-
-######### TESTING ################################
 resource "aws_ecs_service" "service" {
   name                   = "${local.prefix}-service"
   cluster                = aws_ecs_cluster.main.name
@@ -17,17 +15,13 @@ resource "aws_ecs_service" "service" {
     subnets          = [for sn in aws_subnet.public : sn.id]
     security_groups  = [aws_security_group.ecs_access.id]
   }
-  depends_on = [
-    aws_iam_service_linked_role.ecs_service_linked_role
-  ]
+  depends_on = [aws_iam_service_linked_role.ecs_service_linked_role]
 }
 resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
   aws_service_name = "ecs.amazonaws.com"
   #   custom_suffix    = local.prefix #not allowed for ecs, try for rds
-  description = "ECS to create roles needed for first deployments"
+  description = "Service-linked role needed by ECS for first deployments"
 }
-
-
 resource "aws_ecs_task_definition" "taskdef" {
   family                   = local.prefix
   requires_compatibilities = ["FARGATE"]
@@ -130,7 +124,6 @@ resource "aws_ecs_task_definition" "taskdef" {
     cpu_architecture        = "X86_64"
   }
 }
-######### TESTING ################################
 
 resource "aws_security_group" "ecs_access" {
   name        = "${local.prefix}-ecs-access"
