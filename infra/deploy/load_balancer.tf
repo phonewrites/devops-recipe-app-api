@@ -6,6 +6,15 @@ resource "aws_lb" "api" {
   security_groups    = [aws_security_group.alb_access.id]
   depends_on         = [aws_iam_service_linked_role.alb_service_linked_role]
 }
+resource "aws_lb_listener" "api" {
+  load_balancer_arn = aws_lb.api.arn
+  port              = 80
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.api.arn
+  }
+}
 resource "aws_lb_target_group" "api" {
   name        = "${local.prefix}-api"
   protocol    = "HTTP"
@@ -16,15 +25,7 @@ resource "aws_lb_target_group" "api" {
     path = "/api/health-check/"
   }
 }
-resource "aws_lb_listener" "api" {
-  load_balancer_arn = aws_lb.api.arn
-  port              = 80
-  protocol          = "HTTP"
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.api.arn
-  }
-}
+
 resource "aws_iam_service_linked_role" "alb_service_linked_role" {
   aws_service_name = "elasticloadbalancing.amazonaws.com"
   description      = "Service-linked role needed by the ALB for first deployments"

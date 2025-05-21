@@ -153,21 +153,13 @@ resource "aws_vpc_security_group_egress_rule" "outbound_postgres_access" {
   description       = "Outbound PostgreSQL traffic for RDS connectivity"
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_app_access" {
-  security_group_id = aws_security_group.ecs_access.id
-  from_port         = 8000
-  to_port           = 8000
-  ip_protocol       = "tcp"
-  cidr_ipv4         = "0.0.0.0/0"
-  description       = "Inbound traffic to the application from internet"
+  security_group_id            = aws_security_group.ecs_access.id
+  from_port                    = 8000
+  to_port                      = 8000
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.alb_access.id
+  description                  = "Inbound traffic to the application from internet"
 }
-
-
-
-
-
-
-
-
 
 # IAM resources needed by the ECS service
 ##1. Task Role & permissions needed by the application
@@ -246,6 +238,3 @@ data "aws_iam_policy_document" "task_assume_role_policy" {
 resource "aws_cloudwatch_log_group" "ecs_task_logs" {
   name = "${terraform.workspace}/${var.project}"
 }
-
-
-

@@ -199,6 +199,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "elasticloadbalancing:DescribeTags",
       "elasticloadbalancing:ModifyListener",
       "elasticloadbalancing:ModifyListenerAttributes",
+      "elasticloadbalancing:DescribeListenerAttributes",
     ]
     resources = ["*"]
   }

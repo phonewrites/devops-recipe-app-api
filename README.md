@@ -111,7 +111,9 @@ Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` wi
 ## Major changes compared to the original course code:
 - Using granted instead of aws-vault to use locally configured AWS credentials.
 - Using IAM roles & chaining them from an AWS Management account to the account where the service is actually launched, instead of IAM users (with access keys & secrets, i.e. long-lived creds).
-- Terraform deploy Network config is extendable for an organisation with a bigger VPC, more than 2 tiers of subnets, etc.
+- Consolidated all IAM permissions needed by the main CICD role into a single policy, instead of having multiple policies for each service.
+- Deployment of Network config is extendable for an organisation with different network sizes, more than 2 tiers of subnets, etc.
+- Deprcated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
 - IAM permissions updated, espcially regarding the Service Linked Roles for RDS & ECS.
 - docker-compose files are modified to work with the changes made above.
