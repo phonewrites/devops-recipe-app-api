@@ -11,9 +11,14 @@ resource "aws_ecs_service" "service" {
   platform_version       = "1.4.0"
   enable_execute_command = true
   network_configuration {
-    assign_public_ip = true
-    subnets          = [for sn in aws_subnet.public : sn.id]
-    security_groups  = [aws_security_group.ecs_access.id]
+    # assign_public_ip = true #for testing until ECS resource creation
+    subnets         = [for sn in aws_subnet.private : sn.id]
+    security_groups = [aws_security_group.ecs_access.id]
+  }
+  load_balancer {
+    target_group_arn = aws_lb_target_group.api.arn
+    container_name   = "proxy"
+    container_port   = 8000
   }
   depends_on = [aws_iam_service_linked_role.ecs_service_linked_role]
 }
