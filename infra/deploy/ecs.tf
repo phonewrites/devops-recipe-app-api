@@ -158,7 +158,7 @@ resource "aws_vpc_security_group_egress_rule" "outbound_postgres_access" {
   to_port           = 5432
   ip_protocol       = "tcp"
   cidr_ipv4         = each.value
-  description       = "Outbound PostgreSQL traffic for RDS connectivity"
+  description       = "Outbound PostgreSQL traffic for RDS connectivity inside private subnets"
 }
 resource "aws_vpc_security_group_egress_rule" "outbound_efs_access" {
   for_each          = toset(local.private_cidrs)
@@ -167,7 +167,7 @@ resource "aws_vpc_security_group_egress_rule" "outbound_efs_access" {
   to_port           = 2049
   ip_protocol       = "tcp"
   cidr_ipv4         = each.value
-  description       = "Outbound EFS traffic for persistent media storage"
+  description       = "Outbound NFS traffic to the EFS storage inside private subnets"
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_app_access" {
   security_group_id            = aws_security_group.ecs_access.id
