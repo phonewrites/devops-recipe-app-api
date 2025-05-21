@@ -13,17 +13,17 @@ permissions:
 
 jobs:
 
-  # test-lint:
-  #   uses: ./.github/workflows/test-lint.yml
-  #   name: Test and Lint
-  #   secrets:
-  #     DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
-  #     DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+  test-lint:
+    uses: ./.github/workflows/test-lint.yml
+    name: Test and Lint
+    secrets:
+      DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
 
   deploy:
     name: Deploy
     runs-on: ubuntu-22.04
-    # needs: [test-lint]
+    needs: [test-lint]
     steps:
 
       # Preparation
