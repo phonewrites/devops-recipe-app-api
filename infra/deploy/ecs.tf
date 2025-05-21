@@ -1,4 +1,4 @@
-# ECS Cluster for running app on Fargate
+# ECS Cluster for running the app on Fargate
 resource "aws_ecs_cluster" "main" {
   name = local.prefix
 }
@@ -131,6 +131,7 @@ resource "aws_ecs_task_definition" "taskdef" {
   }
 }
 
+# Security Group to implement Access Control for the ECS service
 resource "aws_security_group" "ecs_access" {
   name        = "${local.prefix}-ecs-access"
   description = "Access rules for the ECS service"
@@ -159,14 +160,24 @@ resource "aws_vpc_security_group_egress_rule" "outbound_postgres_access" {
   cidr_ipv4         = each.value
   description       = "Outbound PostgreSQL traffic for RDS connectivity"
 }
+resource "aws_vpc_security_group_egress_rule" "outbound_efs_access" {
+  for_each          = toset(local.private_cidrs)
+  security_group_id = aws_security_group.ecs_access.id
+  from_port         = 2049
+  to_port           = 2049
+  ip_protocol       = "tcp"
+  cidr_ipv4         = each.value
+  description       = "Outbound EFS traffic for persistent media storage"
+}
 resource "aws_vpc_security_group_ingress_rule" "inbound_app_access" {
   security_group_id            = aws_security_group.ecs_access.id
   from_port                    = 8000
   to_port                      = 8000
   ip_protocol                  = "tcp"
   referenced_security_group_id = aws_security_group.alb_access.id
-  description                  = "Inbound traffic to the application from internet"
+  description                  = "Inbound internet traffic from ALB to the application"
 }
+
 
 # IAM resources needed by the ECS service
 ##1. Task Role & permissions needed by the application
