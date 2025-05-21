@@ -78,30 +78,34 @@ docker compose run --rm terraform -chdir=setup apply
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
 ## Terraform deploy setup
-Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
-```
-docker compose run --rm terraform -chdir=setup fmt
-docker compose run --rm terraform -chdir=setup validate
-```
+- Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
+    ```
+    docker compose run --rm terraform -chdir=setup fmt
+    docker compose run --rm terraform -chdir=setup validate
+    ```
+- After ECS servcie is running successfully, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
+    `http://[TASK_PUBLIC_IP]:8000/api/health-check/`  
+    `http://[TASK_PUBLIC_IP]:8000/admin`  
+    `http://[TASK_PUBLIC_IP]:8000/api/docs`  
 
-After ECS servcie is running successfully, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
-`http://[TASK_PUBLIC_IP]:8000/api/health-check/`
-`http://[TASK_PUBLIC_IP]:8000/admin`
-`http://[TASK_PUBLIC_IP]:8000/api/docs`
+- Ensure that AWS SessionManager plugin is installed on your local machine. This is required to run `aws ecs execute-command`:
+    ```
+    aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
+        --task [TASK_ID]\
+        --container api \
+        --interactive \
+        --command "/bin/sh"
+    ```
+- Once inside the task's API container, run the following command to create a superuser:
+    ```
+    python manage.py createsuperuser
+    ```
+    Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
+- After setting up a ALB in front of the ECS service, test accessing the app via the ALB's DNS name:  
+    `http://[ALB_DNS_NAME]/api/health-check/`  
+    `http://[ALB_DNS_NAME]/admin`  
+    `http://[ALB_DNS_NAME]/api/docs`  
 
-Ensure that AWS SessionManager plugin is installed on your local machine. This is required to run `aws ecs execute-command`:
-```
-aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
-    --task [TASK_ID]\
-    --container api \
-    --interactive \
-    --command "/bin/sh"
-```
-Once inside the task's API container, run the following command to create a superuser:
-```
-python manage.py createsuperuser
-```
-Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
 
 
 
