@@ -34,6 +34,8 @@ resource "aws_iam_service_linked_role" "rds_service_linked_role" {
   aws_service_name = "rds.amazonaws.com"
   description      = "Service-linked role needed by RDS for first deployments"
 }
+
+# Security Group to implement Access Control for the RDS DB instance
 resource "aws_security_group" "rds_access" {
   name        = "${local.prefix}-rds-inbound-access"
   description = "Access rules for the RDS DB instance"

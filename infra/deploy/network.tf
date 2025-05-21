@@ -85,27 +85,8 @@ resource "aws_subnet" "private" {
   }
 }
 
-# AWS VPC Endpoints setup for ECR, CloudWatch, Systems Manager & S3
-resource "aws_security_group" "endpoint_access" {
-  name        = "${local.prefix}-endpoint-access" #test name change
-  description = "Access to VPC endpoints"
-  vpc_id      = aws_vpc.main.id
-  lifecycle {
-    create_before_destroy = true #Fix "Still destroying..." issue
-  }
-  tags = {
-    Name = "${local.prefix}-endpoint-access"
-  }
-}
-resource "aws_vpc_security_group_ingress_rule" "inbound_endpoints_access" {
-  security_group_id = aws_security_group.endpoint_access.id
-  from_port         = 443
-  to_port           = 443
-  ip_protocol       = "tcp"
-  cidr_ipv4         = aws_vpc.main.cidr_block
-  description       = "Inbound HTTPS traffic from within the VPC"
-}
 
+# AWS VPC Endpoints setup for ECR, CloudWatch, Systems Manager & S3
 resource "aws_vpc_endpoint" "interface_endpoint" {
   for_each            = local.interface_endpoints
   vpc_id              = aws_vpc.main.id
@@ -128,4 +109,25 @@ resource "aws_vpc_endpoint" "s3" {
   tags = {
     Name = "${local.prefix}-s3-endpoint"
   }
+}
+
+# Security Group to implement Access Control to the AWS Service endpoints
+resource "aws_security_group" "endpoint_access" {
+  name        = "${local.prefix}-endpoint-access"
+  description = "Access to VPC endpoints"
+  vpc_id      = aws_vpc.main.id
+  lifecycle {
+    create_before_destroy = true #Fix "Still destroying..." issue
+  }
+  tags = {
+    Name = "${local.prefix}-endpoint-access"
+  }
+}
+resource "aws_vpc_security_group_ingress_rule" "inbound_endpoints_access" {
+  security_group_id = aws_security_group.endpoint_access.id
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = aws_vpc.main.cidr_block
+  description       = "Inbound HTTPS traffic from within the VPC"
 }

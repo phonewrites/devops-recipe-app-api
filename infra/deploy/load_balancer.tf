@@ -1,4 +1,4 @@
-##### TESTING
+# ALB (Application Load Balancer) setup
 resource "aws_lb" "api" {
   name               = "${local.prefix}-alb"
   load_balancer_type = "application"
@@ -31,9 +31,7 @@ resource "aws_iam_service_linked_role" "alb_service_linked_role" {
   description      = "Service-linked role needed by the ALB for first deployments"
 }
 
-##### TESTING
-
-
+# Security Group to implement Access Control for the ALB
 resource "aws_security_group" "alb_access" {
   description = "Access rules for the Application Load Balancer"
   name        = "${local.prefix}-alb-access"
