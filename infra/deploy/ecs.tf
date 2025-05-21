@@ -12,6 +12,8 @@ resource "aws_ecs_service" "service" {
   enable_execute_command = true
   network_configuration {
     # assign_public_ip = true #for testing until ECS resource creation
+    # subnets         = [for sn in aws_subnet.public : sn.id]
+    # Switch to public subnets once ALB is set up
     subnets         = [for sn in aws_subnet.private : sn.id]
     security_groups = [aws_security_group.ecs_access.id]
   }
