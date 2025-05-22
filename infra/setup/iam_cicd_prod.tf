@@ -36,6 +36,8 @@ resource "aws_iam_policy" "cicd_gh_actions_policy" {
   description = "Allow managing resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
 }
+
+# TO DO: Separate into separate IAM policies
 data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   statement {
     sid       = "GetECRAuthToken"
@@ -203,30 +205,29 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-  statement {
-    sid    = "ManageEFS"
-    effect = "Allow"
-    actions = [
-      "elasticfilesystem:DescribeFileSystems",
-      "elasticfilesystem:DescribeAccessPoints",
-      "elasticfilesystem:DeleteFileSystem",
-      "elasticfilesystem:DeleteAccessPoint",
-      "elasticfilesystem:DescribeMountTargets",
-      "elasticfilesystem:DeleteMountTarget",
-      "elasticfilesystem:DescribeMountTargetSecurityGroups",
-      "elasticfilesystem:DescribeLifecycleConfiguration",
-      "elasticfilesystem:CreateMountTarget",
-      "elasticfilesystem:CreateAccessPoint",
-      "elasticfilesystem:CreateFileSystem",
-      "elasticfilesystem:TagResource",
-      #ENI permissions needed to manage EFS Mount Target
-      "ec2:CreateNetworkInterface",
-      "ec2:DeleteNetworkInterface",
-      "ec2:AttachNetworkInterface",
-      "ec2:ModifyNetworkInterfaceAttribute"
-  ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "ManageEFS"
+  #   effect = "Allow"
+  #   actions = [
+  #     "elasticfilesystem:DescribeFileSystems",
+  #     "elasticfilesystem:DescribeAccessPoints",
+  #     "elasticfilesystem:DeleteFileSystem",
+  #     "elasticfilesystem:DeleteAccessPoint",
+  #     "elasticfilesystem:DescribeMountTargets",
+  #     "elasticfilesystem:DeleteMountTarget",
+  #     "elasticfilesystem:DescribeMountTargetSecurityGroups",
+  #     "elasticfilesystem:DescribeLifecycleConfiguration",
+  #     "elasticfilesystem:CreateMountTarget",
+  #     "elasticfilesystem:CreateAccessPoint",
+  #     "elasticfilesystem:CreateFileSystem",
+  #     "elasticfilesystem:TagResource",
+  #     "ec2:CreateNetworkInterface",
+  #     "ec2:DeleteNetworkInterface",
+  #     "ec2:AttachNetworkInterface",
+  #     "ec2:ModifyNetworkInterfaceAttribute"
+  #   ]
+  #   resources = ["*"]
+  # }
   statement {
     #Create service-linked roles needed for first deployments
     sid    = "CreateServiceLinkedRoles"
@@ -278,3 +279,17 @@ resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.cicd_gh_actions_policy.arn
 }
+resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
+}
+import {
+  to = aws_iam_role_policy_attachment.amazon_managed_efs_full_access_policy
+  id = "cicd-gh-actions-role/arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
+}
+
+
+
+
+
