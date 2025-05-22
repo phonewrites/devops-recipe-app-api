@@ -219,7 +219,12 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "elasticfilesystem:CreateAccessPoint",
       "elasticfilesystem:CreateFileSystem",
       "elasticfilesystem:TagResource",
-    ]
+      #ENI permissions needed to manage EFS Mount Target
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:AttachNetworkInterface",
+      "ec2:ModifyNetworkInterfaceAttribute"
+  ]
     resources = ["*"]
   }
   statement {
