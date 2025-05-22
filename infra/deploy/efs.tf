@@ -36,15 +36,6 @@ resource "aws_security_group" "efs_access" {
   tags = {
     Name = "${local.prefix}-efs-access"
   }
-  #   ingress {
-  #     from_port = 2049
-  #     to_port   = 2049
-  #     protocol  = "tcp"
-
-  #     security_groups = [
-  #       aws_security_group.ecs_service.id
-  #     ]
-  #   }
 }
 resource "aws_vpc_security_group_ingress_rule" "inbound_efs_access" {
   security_group_id            = aws_security_group.efs_access.id
@@ -54,6 +45,4 @@ resource "aws_vpc_security_group_ingress_rule" "inbound_efs_access" {
   referenced_security_group_id = aws_security_group.ecs_access.id
   description                  = "Inbound NFS traffic from application"
 }
-
-
 ########## TESTING ####################
