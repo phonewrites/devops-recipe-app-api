@@ -44,8 +44,8 @@ variable "subdomain" {
   description = "Subdomain for each environment"
   type        = map(string)
   default = {
-    prod    = "devops-recipe-app-api"
-    staging = "devops-recipe-app-api.staging"
-    dev     = "devops-recipe-app-api.dev"
+    prod    = "recipe.api"
+    staging = "recipe.api.staging"
+    dev     = "recipe.api.dev"
   }
 }
