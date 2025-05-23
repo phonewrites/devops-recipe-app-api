@@ -35,8 +35,7 @@ variable "django_secret_key" {
   description = "Secret key for Django"
 }
 
-### TESTING - CUSTOM DOMAIN
-variable "dns_zone_name" {
+variable "dns_zone_name" { #TO TRY: Pass domain from GH Actions Variable
   description = "Domain name"
   default     = "phonewrites.com"
 }

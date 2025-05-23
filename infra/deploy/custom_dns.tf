@@ -2,15 +2,18 @@
 data "aws_route53_zone" "public_zone" {
   name = "${var.dns_zone_name}."
 }
-
 resource "aws_route53_record" "app_cname_record" {
   zone_id = data.aws_route53_zone.public_zone.zone_id
   name    = "${lookup(var.subdomain, terraform.workspace)}.${data.aws_route53_zone.public_zone.name}"
   type    = "CNAME"
   records = [aws_lb.api.dns_name]
-  ttl     = "60"
+  ttl     = 60
+  # lifecycle {
+  #   replace_triggered_by = [
+  #     data.aws_route53_zone.public_zone
+  #   ]
+  # }
 }
-
 resource "aws_acm_certificate" "cert" {
   domain_name       = aws_route53_record.app_cname_record.name
   validation_method = "DNS"
@@ -18,7 +21,6 @@ resource "aws_acm_certificate" "cert" {
     create_before_destroy = true
   }
 }
-
 resource "aws_route53_record" "cert_validation_record" {
   for_each = {
     for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
@@ -34,7 +36,6 @@ resource "aws_route53_record" "cert_validation_record" {
   type            = each.value.type
   zone_id         = data.aws_route53_zone.public_zone.zone_id
 }
-
 resource "aws_acm_certificate_validation" "cert" {
   certificate_arn         = aws_acm_certificate.cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation_record : record.fqdn]
