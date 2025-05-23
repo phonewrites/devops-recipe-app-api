@@ -36,8 +36,7 @@ resource "aws_iam_policy" "cicd_gh_actions_policy" {
   description = "Allow managing resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
 }
-
-# TO DO: Separate into separate IAM policies
+###TO DO: Separate into separate IAM policies
 data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   statement {
     sid       = "GetECRAuthToken"

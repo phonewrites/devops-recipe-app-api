@@ -11,9 +11,10 @@ resource "aws_ecs_service" "service" {
   platform_version       = "1.4.0"
   enable_execute_command = true
   network_configuration {
-    # assign_public_ip = true #for testing until ECS resource creation
+    ##For testing service reachability wthout ALB
+    # assign_public_ip = true
     # subnets         = [for sn in aws_subnet.public : sn.id]
-    # Switch to public subnets once ALB is set up
+    ##Switch to public subnets once ALB is set up
     subnets         = [for sn in aws_subnet.private : sn.id]
     security_groups = [aws_security_group.ecs_access.id]
   }
