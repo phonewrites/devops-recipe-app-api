@@ -1,3 +1,3 @@
 output "api_endpoint" {
-  value = aws_route53_record.app.fqdn
+  value = aws_route53_record.cname_record.fqdn
 }
