@@ -228,6 +228,27 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   resources = ["*"]
   # }
   statement {
+    sid    = "ManageCustomSubdomain"
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZones",
+      "route53:ListHostedZones",
+      "route53:ChangeTagsForResource",
+      "route53:GetHostedZone",
+      "route53:ListTagsForResource",
+      "route53:ChangeResourceRecordSets",
+      "route53:GetChange",
+      "route53:ListResourceRecordSets",
+      "acm:RequestCertificate",
+      "acm:AddTagsToCertificate",
+      "acm:DescribeCertificate",
+      "acm:ListTagsForCertificate",
+      "acm:DeleteCertificate",
+      "acm:CreateCertificate"
+    ]
+    resources = ["*"]
+  }
+  statement {
     #Create service-linked roles needed for first deployments
     sid    = "CreateServiceLinkedRoles"
     effect = "Allow"
@@ -238,6 +259,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
       "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
       "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
     ]
     condition {
       test     = "StringEquals"
@@ -246,6 +268,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
         "rds.amazonaws.com",
         "ecs.amazonaws.com",
         "elasticloadbalancing.amazonaws.com",
+        "elasticfilesystem.amazonaws.com",
       ]
     }
   }
@@ -261,6 +284,7 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
       "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
       "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
     ]
   }
   statement {

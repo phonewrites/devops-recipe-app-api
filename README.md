@@ -83,7 +83,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
     docker compose run --rm terraform -chdir=setup fmt
     docker compose run --rm terraform -chdir=setup validate
     ```
-- After ECS servcie is running successfully, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
+- After *ECS servcie is running successfully*, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
     `http://[TASK_PUBLIC_IP]:8000/api/health-check/`  
     `http://[TASK_PUBLIC_IP]:8000/admin`  
     `http://[TASK_PUBLIC_IP]:8000/api/docs`  
@@ -101,11 +101,19 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
     python manage.py createsuperuser
     ```
     Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
-- After setting up a ALB in front of the ECS service, test accessing the app via the ALB's DNS name:  
+- After *setting up a ALB* in front of the ECS service, test accessing the app via the ALB's DNS name:  
     `http://[ALB_DNS_NAME]/api/health-check/`  
     `http://[ALB_DNS_NAME]/admin`  
-    `http://[ALB_DNS_NAME]/api/docs`  
-
+    `http://[ALB_DNS_NAME]/api/docs`
+- After *setting up EFS* for persistent storage, test again using above URLs in the browser. If the entire deployment was deleted and recreated, the database will be empty. You can create a superuser again using the command:
+    ```
+    aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
+        --task [TASK_ID]\
+        --container api \
+        --interactive \
+        --command "/bin/sh"
+    python manage.py createsuperuser
+    ```
 
 
 
@@ -113,11 +121,13 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 
 
 ## Major changes compared to the original course code:
-- Using granted instead of aws-vault to use locally configured AWS credentials.
+- Using an AWS organisation (multiple AWS accounts) setup, with a management account and one member account (prod) to simulate a real-world scenario. However, the code can be extended to support multiple member accounts.
+- Using AWS Identity Center/SSO instead of IAM users for authentication.
+- Using granted instead of aws-vault to use locally configured AWS credentials to authenticate an SSO User with Administrator access.
 - Using IAM roles & chaining them from an AWS Management account to the account where the service is actually launched, instead of IAM users (with access keys & secrets, i.e. long-lived creds).
 - Consolidated all IAM permissions needed by the main CICD role into a single policy, instead of having multiple policies for each service.
-- Deployment of Network config is extendable for an organisation with different network sizes, more than 2 tiers of subnets, etc.
-- Deprcated resources are replaced with the latest ones, following the terraform recommeded best practices.
+- Deployment of Networking configuration is extendable for an organisation with different network sizes, more than 2 tiers of subnets, etc.
+- Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
 - IAM permissions updated, espcially regarding the Service Linked Roles for RDS & ECS.
 - docker-compose files are modified to work with the changes made above.
