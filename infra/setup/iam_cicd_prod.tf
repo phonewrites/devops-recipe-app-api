@@ -204,26 +204,34 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-  # statement {
+  # statement { # Try sans managed AmazonElasticFileSystemFullAccess policy
   #   sid    = "ManageEFS"
   #   effect = "Allow"
   #   actions = [
-  #     "elasticfilesystem:DescribeFileSystems",
-  #     "elasticfilesystem:DescribeAccessPoints",
-  #     "elasticfilesystem:DeleteFileSystem",
-  #     "elasticfilesystem:DeleteAccessPoint",
-  #     "elasticfilesystem:DescribeMountTargets",
-  #     "elasticfilesystem:DeleteMountTarget",
-  #     "elasticfilesystem:DescribeMountTargetSecurityGroups",
-  #     "elasticfilesystem:DescribeLifecycleConfiguration",
-  #     "elasticfilesystem:CreateMountTarget",
-  #     "elasticfilesystem:CreateAccessPoint",
-  #     "elasticfilesystem:CreateFileSystem",
-  #     "elasticfilesystem:TagResource",
-  #     "ec2:CreateNetworkInterface",
-  #     "ec2:DeleteNetworkInterface",
-  #     "ec2:AttachNetworkInterface",
-  #     "ec2:ModifyNetworkInterfaceAttribute"
+  #     "ec2:DescribeNetworkInterfaceAttribute",
+  #     "elasticfilesystem:CreateTags",
+  #     "elasticfilesystem:CreateReplicationConfiguration",
+  #     "elasticfilesystem:DeleteTags",
+  #     "elasticfilesystem:DeleteFileSystemPolicy",
+  #     "elasticfilesystem:DeleteReplicationConfiguration",
+  #     "elasticfilesystem:DescribeAccountPreferences",
+  #     "elasticfilesystem:DescribeBackupPolicy",
+  #     "elasticfilesystem:DescribeFileSystemPolicy",
+  #     "elasticfilesystem:DescribeTags",
+  #     "elasticfilesystem:DescribeReplicationConfigurations",
+  #     "elasticfilesystem:ModifyMountTargetSecurityGroups",
+  #     "elasticfilesystem:PutAccountPreferences",
+  #     "elasticfilesystem:PutBackupPolicy",
+  #     "elasticfilesystem:PutLifecycleConfiguration",
+  #     "elasticfilesystem:PutFileSystemPolicy",
+  #     "elasticfilesystem:UpdateFileSystem",
+  #     "elasticfilesystem:UpdateFileSystemProtection",
+  #     "elasticfilesystem:UntagResource",
+  #     "elasticfilesystem:ListTagsForResource",
+  #     "elasticfilesystem:Backup",
+  #     "elasticfilesystem:Restore",
+  #     "elasticfilesystem:ReplicationRead",
+  #     "elasticfilesystem:ReplicationWrite",
   #   ]
   #   resources = ["*"]
   # }
@@ -287,15 +295,15 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
       "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
     ]
   }
-  statement {
-    sid    = "S3FullAccess"
-    effect = "Allow"
-    actions = [
-      "s3:*",
-      "s3-object-lambda:*"
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "S3FullAccess"
+  #   effect = "Allow"
+  #   actions = [
+  #     "s3:*",
+  #     "s3-object-lambda:*"
+  #   ]
+  #   resources = ["*"]
+  # }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
   provider   = aws.prod
