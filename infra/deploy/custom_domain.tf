@@ -5,7 +5,7 @@ data "aws_route53_zone" "public_zone" {
 
 resource "aws_route53_record" "cname_record" {
   zone_id = data.aws_route53_zone.public_zone.zone_id
-  name    = "${lookup(var.subdomain, terraform.workspace)}.${data.aws_route53_zone.zone.name}"
+  name    = "${lookup(var.subdomain, terraform.workspace)}.${data.aws_route53_zone.public_zone.name}"
   type    = "CNAME"
   records = [aws_lb.api.dns_name]
   ttl     = "60"
