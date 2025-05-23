@@ -3,7 +3,7 @@ data "aws_route53_zone" "public_zone" {
   name = "${var.dns_zone_name}."
 }
 
-resource "aws_route53_record" "cname_record" {
+resource "aws_route53_record" "app_cname_record" {
   zone_id = data.aws_route53_zone.public_zone.zone_id
   name    = "${lookup(var.subdomain, terraform.workspace)}.${data.aws_route53_zone.public_zone.name}"
   type    = "CNAME"
@@ -12,7 +12,7 @@ resource "aws_route53_record" "cname_record" {
 }
 
 resource "aws_acm_certificate" "cert" {
-  domain_name       = aws_route53_record.cname_record.name
+  domain_name       = aws_route53_record.app_cname_record.name
   validation_method = "DNS"
   lifecycle {
     create_before_destroy = true
