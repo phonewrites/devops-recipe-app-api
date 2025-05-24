@@ -212,27 +212,27 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   ]
   #   resources = ["*"]
   # }
-  statement {
-    sid    = "ManageCustomSubdomain"
-    effect = "Allow"
-    actions = [
-      "route53:ListHostedZones",
-      "route53:ListHostedZones",
-      "route53:ChangeTagsForResource",
-      "route53:GetHostedZone",
-      "route53:ListTagsForResource",
-      "route53:ChangeResourceRecordSets",
-      "route53:GetChange",
-      "route53:ListResourceRecordSets",
-      "acm:RequestCertificate",
-      "acm:AddTagsToCertificate",
-      "acm:DescribeCertificate",
-      "acm:ListTagsForCertificate",
-      "acm:DeleteCertificate",
-      "acm:CreateCertificate"
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "ManageCustomSubdomain"
+  #   effect = "Allow"
+  #   actions = [
+  #     "route53:ListHostedZones",
+  #     "route53:ListHostedZones",
+  #     "route53:ChangeTagsForResource",
+  #     "route53:GetHostedZone",
+  #     "route53:ListTagsForResource",
+  #     "route53:ChangeResourceRecordSets",
+  #     "route53:GetChange",
+  #     "route53:ListResourceRecordSets",
+  #     "acm:RequestCertificate",
+  #     "acm:AddTagsToCertificate",
+  #     "acm:DescribeCertificate",
+  #     "acm:ListTagsForCertificate",
+  #     "acm:DeleteCertificate",
+  #     "acm:CreateCertificate"
+  #   ]
+  #   resources = ["*"]
+  # }
   # statement {
   #   sid    = "ManageIAM"
   #   effect = "Allow"
@@ -602,7 +602,7 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
 resource "aws_iam_policy" "cicd_gha_cw_policy" {
   provider    = aws.prod
   name        = "cicd-gha-cw-policy"
-  description = "Allow managing CloudWatch resources in prod account for deployments"
+  description = "Allow managing CloudWatch resources in prod account for logging"
   policy      = data.aws_iam_policy_document.cicd_gha_cw_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_cw_policy" {
@@ -624,4 +624,39 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_cw_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.cicd_gha_cw_policy.arn
+}
+
+resource "aws_iam_policy" "cicd_gha_dns_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-dns-policy"
+  description = "Allow managing resources needed to manage a custom domain in prod account"
+  policy      = data.aws_iam_policy_document.cicd_gha_dns_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_dns_policy" {
+    statement {
+    sid    = "ManageCustomSubdomain"
+    effect = "Allow"
+    actions = [
+      "route53:ListHostedZones",
+      "route53:ListHostedZones",
+      "route53:ChangeTagsForResource",
+      "route53:GetHostedZone",
+      "route53:ListTagsForResource",
+      "route53:ChangeResourceRecordSets",
+      "route53:GetChange",
+      "route53:ListResourceRecordSets",
+      "acm:RequestCertificate",
+      "acm:AddTagsToCertificate",
+      "acm:DescribeCertificate",
+      "acm:ListTagsForCertificate",
+      "acm:DeleteCertificate",
+      "acm:CreateCertificate"
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_dns_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_dns_policy.arn
 }
