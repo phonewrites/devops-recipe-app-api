@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "cicd_assume_role_policy" {
 }
 
 
-##1. Policy to assume the Terraform Backend Access role in mgmt account
+##1. IAM policy to assume the Terraform Backend Access role in mgmt account
 resource "aws_iam_policy" "cicd_assume_tf_backend_access_role_policy" {
   provider = aws.prod
   name     = "cicd-assume-tf-backend-access-role-policy"
@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
   policy_arn = aws_iam_policy.cicd_assume_tf_backend_access_role_policy.arn
 }
 
-##2. Policy for deployments by GitHub Actions
+##2. IAM policy for deployments by GitHub Actions
 resource "aws_iam_policy" "cicd_gh_actions_policy" {
   provider    = aws.prod
   name        = "${aws_iam_role.cicd_gh_actions_role.name}-policy"
@@ -314,10 +314,6 @@ resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
-}
-import {
-  to = aws_iam_role_policy_attachment.amazon_managed_efs_full_access_policy
-  id = "cicd-gh-actions-role/arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
 }
 
 
