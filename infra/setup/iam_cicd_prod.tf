@@ -672,13 +672,13 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
   policy_arn = aws_iam_policy.cicd_gha_iam_policy.arn
 }
 
-
 resource "aws_iam_policy" "cicd_gha_dns_policy" {
   provider    = aws.prod
   name        = "cicd-gha-dns-policy"
   description = "Allow managing resources needed to manage a custom domain in prod account"
   policy      = data.aws_iam_policy_document.cicd_gha_dns_policy.json
 }
+
 data "aws_iam_policy_document" "cicd_gha_dns_policy" {
   statement {
     sid    = "ManageCustomSubdomain"
@@ -702,6 +702,7 @@ data "aws_iam_policy_document" "cicd_gha_dns_policy" {
     resources = ["*"]
   }
 }
+
 resource "aws_iam_role_policy_attachment" "cicd_gha_dns_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
