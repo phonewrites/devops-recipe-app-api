@@ -220,6 +220,7 @@ data "aws_iam_policy_document" "cicd_gha_alb_policy" {
       "elasticloadbalancing:ModifyListener",
       "elasticloadbalancing:ModifyListenerAttributes",
       "elasticloadbalancing:DescribeListenerAttributes",
+      "ec2:DescribeAccountAttributes",
     ]
     resources = ["*"]
   }
