@@ -142,32 +142,32 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   ]
   #   resources = ["*"]
   # }
-  statement {
-    sid    = "ManageALB"
-    effect = "Allow"
-    actions = [
-      "elasticloadbalancing:DeleteLoadBalancer",
-      "elasticloadbalancing:DeleteTargetGroup",
-      "elasticloadbalancing:DeleteListener",
-      "elasticloadbalancing:DescribeListeners",
-      "elasticloadbalancing:DescribeLoadBalancerAttributes",
-      "elasticloadbalancing:DescribeTargetGroups",
-      "elasticloadbalancing:DescribeTargetGroupAttributes",
-      "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:CreateListener",
-      "elasticloadbalancing:SetSecurityGroups",
-      "elasticloadbalancing:ModifyLoadBalancerAttributes",
-      "elasticloadbalancing:CreateLoadBalancer",
-      "elasticloadbalancing:ModifyTargetGroupAttributes",
-      "elasticloadbalancing:CreateTargetGroup",
-      "elasticloadbalancing:AddTags",
-      "elasticloadbalancing:DescribeTags",
-      "elasticloadbalancing:ModifyListener",
-      "elasticloadbalancing:ModifyListenerAttributes",
-      "elasticloadbalancing:DescribeListenerAttributes",
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "ManageALB"
+  #   effect = "Allow"
+  #   actions = [
+  #     "elasticloadbalancing:DeleteLoadBalancer",
+  #     "elasticloadbalancing:DeleteTargetGroup",
+  #     "elasticloadbalancing:DeleteListener",
+  #     "elasticloadbalancing:DescribeListeners",
+  #     "elasticloadbalancing:DescribeLoadBalancerAttributes",
+  #     "elasticloadbalancing:DescribeTargetGroups",
+  #     "elasticloadbalancing:DescribeTargetGroupAttributes",
+  #     "elasticloadbalancing:DescribeLoadBalancers",
+  #     "elasticloadbalancing:CreateListener",
+  #     "elasticloadbalancing:SetSecurityGroups",
+  #     "elasticloadbalancing:ModifyLoadBalancerAttributes",
+  #     "elasticloadbalancing:CreateLoadBalancer",
+  #     "elasticloadbalancing:ModifyTargetGroupAttributes",
+  #     "elasticloadbalancing:CreateTargetGroup",
+  #     "elasticloadbalancing:AddTags",
+  #     "elasticloadbalancing:DescribeTags",
+  #     "elasticloadbalancing:ModifyListener",
+  #     "elasticloadbalancing:ModifyListenerAttributes",
+  #     "elasticloadbalancing:DescribeListenerAttributes",
+  #   ]
+  #   resources = ["*"]
+  # }
   statement {
     sid    = "ManageIAM"
     effect = "Allow"
@@ -360,7 +360,7 @@ resource "aws_iam_policy" "cicd_gha_vpc_policy" {
   provider    = aws.prod
   name        = "cicd-gha-vpc-policy"
   description = "Allow managing Network resources in prod account for deployments"
-  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+  policy      = data.aws_iam_policy_document.cicd_gha_vpc_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_vpc_policy" {
   statement {
@@ -420,7 +420,7 @@ resource "aws_iam_policy" "cicd_gha_rds_policy" {
   provider    = aws.prod
   name        = "cicd-gha-rds-policy"
   description = "Allow managing RDS resources in prod account for deployments"
-  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+  policy      = data.aws_iam_policy_document.cicd_gha_rds_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_rds_policy" {
   statement {
@@ -446,12 +446,11 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_rds_policy" {
   policy_arn = aws_iam_policy.cicd_gha_rds_policy.arn
 }
 
-
 resource "aws_iam_policy" "cicd_gha_ecs_policy" {
   provider    = aws.prod
   name        = "cicd-gha-ecs-policy"
   description = "Allow managing ECS resources in prod account for deployments"
-  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+  policy      = data.aws_iam_policy_document.cicd_gha_ecs_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
     statement {
@@ -480,3 +479,42 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_ecs_policy" {
   policy_arn = aws_iam_policy.cicd_gha_ecs_policy.arn
 }
 
+resource "aws_iam_policy" "cicd_gha_alb_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-alb-policy"
+  description = "Allow managing ALB resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_alb_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_alb_policy" {
+  statement {
+    sid    = "ManageALB"
+    effect = "Allow"
+    actions = [
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DeleteTargetGroup",
+      "elasticloadbalancing:DeleteListener",
+      "elasticloadbalancing:DescribeListeners",
+      "elasticloadbalancing:DescribeLoadBalancerAttributes",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetGroupAttributes",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:CreateListener",
+      "elasticloadbalancing:SetSecurityGroups",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:ModifyTargetGroupAttributes",
+      "elasticloadbalancing:CreateTargetGroup",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:DescribeTags",
+      "elasticloadbalancing:ModifyListener",
+      "elasticloadbalancing:ModifyListenerAttributes",
+      "elasticloadbalancing:DescribeListenerAttributes",
+    ]
+    resources = ["*"]
+  }  
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_alb_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_alb_policy.arn
+}
