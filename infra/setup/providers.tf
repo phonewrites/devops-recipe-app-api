@@ -1,6 +1,3 @@
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
-
 terraform {
   required_providers {
     aws = {
@@ -28,7 +25,6 @@ provider "aws" {
       environment = terraform.workspace
       project     = var.project
       contact     = var.contact
-      #   managed_by    = "Terraform/setup"
     }
   }
 }
@@ -43,7 +39,6 @@ provider "aws" {
       environment = terraform.workspace
       project     = var.project
       contact     = var.contact
-      #   managed_by    = "Terraform/setup"
     }
   }
 }

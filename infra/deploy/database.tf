@@ -1,0 +1,58 @@
+# RDS Database Instance & related resources
+resource "aws_db_instance" "main" {
+  identifier                 = "${local.prefix}-db"
+  db_name                    = replace(local.prefix, "-", "")
+  allocated_storage          = 20
+  storage_type               = "gp2"
+  engine                     = "postgres"
+  auto_minor_version_upgrade = true
+  instance_class             = "db.t4g.micro"
+  username                   = var.db_username
+  password                   = var.db_password
+  skip_final_snapshot        = true
+  db_subnet_group_name       = aws_db_subnet_group.main.name
+  multi_az                   = false
+  backup_retention_period    = 0
+  vpc_security_group_ids     = [aws_security_group.rds_access.id]
+  tags = {
+    Name = "${local.prefix}-db"
+  }
+  lifecycle { #Deletes & replaces the DB instance when SG updates
+    replace_triggered_by = [aws_security_group.rds_access]
+  }
+  depends_on = [aws_iam_service_linked_role.rds_service_linked_role]
+}
+resource "aws_db_subnet_group" "main" {
+  name       = "${local.prefix}-main"
+  subnet_ids = [for sn in aws_subnet.private : sn.id]
+  tags = {
+    Name = "${local.prefix}-db-subnet-group"
+  }
+  depends_on = [aws_iam_service_linked_role.rds_service_linked_role]
+}
+resource "aws_iam_service_linked_role" "rds_service_linked_role" {
+  aws_service_name = "rds.amazonaws.com"
+  description      = "Service-linked role needed by RDS for first deployments"
+}
+
+# Security Group to implement Access Control for the RDS DB instance
+resource "aws_security_group" "rds_access" {
+  name        = "${local.prefix}-rds-inbound-access"
+  description = "Access rules for the RDS DB instance"
+  vpc_id      = aws_vpc.main.id
+  lifecycle {
+    create_before_destroy = true #Fix "Still destroying..." issue
+  }
+  tags = {
+    Name = "${local.prefix}-rds-inbound-access"
+  }
+}
+resource "aws_vpc_security_group_ingress_rule" "inbound_postgres_access" {
+  security_group_id            = aws_security_group.rds_access.id
+  from_port                    = 5432
+  to_port                      = 5432
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.ecs_access.id
+  description                  = "Inbound PostgreSQL traffic from ECS"
+}
+

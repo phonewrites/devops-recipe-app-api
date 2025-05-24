@@ -31,7 +31,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 >Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api.docs` 
+2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api/docs` 
 
 ### Clearing Storage
 
@@ -71,14 +71,65 @@ Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
 ```
 docker compose run --rm terraform -chdir=setup fmt
-docker compose run --rm terraform -chdir=setup vaidate
+docker compose run --rm terraform -chdir=setup validate
 docker compose run --rm terraform -chdir=setup plan
 docker compose run --rm terraform -chdir=setup apply
 ```
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
+## Terraform deploy setup
+- Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
+    ```
+    docker compose run --rm terraform -chdir=setup fmt
+    docker compose run --rm terraform -chdir=setup validate
+    ```
+- After *ECS servcie is running successfully*, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
+    `http://[TASK_PUBLIC_IP]:8000/api/health-check/`  
+    `http://[TASK_PUBLIC_IP]:8000/admin`  
+    `http://[TASK_PUBLIC_IP]:8000/api/docs`  
+
+- Ensure that AWS SessionManager plugin is installed on your local machine. This is required to run `aws ecs execute-command`:
+    ```
+    aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
+        --task [TASK_ID]\
+        --container api \
+        --interactive \
+        --command "/bin/sh"
+    ```
+- Once inside the task's API container, run the following command to create a superuser:
+    ```
+    python manage.py createsuperuser
+    ```
+    Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
+- After *setting up a ALB* in front of the ECS service, test accessing the app via the ALB's DNS name:  
+    `http://[ALB_DNS_NAME]/api/health-check/`  
+    `http://[ALB_DNS_NAME]/admin`  
+    `http://[ALB_DNS_NAME]/api/docs`
+- After *setting up EFS* for persistent storage, test again using above URLs in the browser. If the entire deployment was deleted and recreated, the database will be empty. You can create a superuser again using the command:
+    ```
+    aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
+        --task [TASK_ID]\
+        --container api \
+        --interactive \
+        --command "/bin/sh"
+    python manage.py createsuperuser
+    ```
 
 
+
+
+
+
+## Major changes compared to the original course code:
+- Using an AWS organisation (multiple AWS accounts) setup, with a management account and one member account (prod) to simulate a real-world scenario. However, the code can be extended to support multiple member accounts.
+- Using AWS Identity Center/SSO instead of IAM users for authentication.
+- Using granted instead of aws-vault to use locally configured AWS credentials to authenticate an SSO User with Administrator access.
+- Using IAM roles & chaining them from an AWS Management account to the account where the service is actually launched, instead of IAM users (with access keys & secrets, i.e. long-lived creds).
+- Deployment of Networking configuration is extendable for an organisation with different network sizes, more than 2 tiers of subnets, etc.
+- Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
+- Terraform code is DRY wherever possible, adding to the extendability from the point above.
+- IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
+- `docker-compose` files are modified to work with the changes made above.
 
 
 
@@ -89,26 +140,6 @@ Sources:
 https://github.com/github/gitignore/blob/main/Terraform.gitignore
 
 
-TEST - REMOVE LATER
-------------
-{
-  "title": "Coconut sweet",
-  "time_minutes": "60",
-  "price": "10.00",
-  "link": "https://example.com",
-  "tags": [
-    {
-      "name": "sweets"
-    }
-  ],
-  "ingredients": [
-    {
-      "name": "coconut"
-    }
-  ],
-  "description": "Oriental coconut sweets dev env"
-}
-------------
 
 ############# MY EDITS TILL HERE #####
 
