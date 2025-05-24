@@ -558,19 +558,26 @@ data "aws_iam_policy_document" "cicd_gha_efs_policy" {
     sid    = "ManageEFS"
     effect = "Allow"
     actions = [
-      "ec2:DescribeNetworkInterfaceAttribute",
       "elasticfilesystem:CreateFileSystem",
-      "elasticfilesystem:DescribeFileSystems",
+      "elasticfilesystem:CreateMountTarget",
       "elasticfilesystem:CreateTags",
+      "elasticfilesystem:CreateAccessPoint",
       "elasticfilesystem:CreateReplicationConfiguration",
+      "elasticfilesystem:DeleteFileSystem",
+      "elasticfilesystem:DeleteMountTarget",
       "elasticfilesystem:DeleteTags",
+      "elasticfilesystem:DeleteAccessPoint",
       "elasticfilesystem:DeleteFileSystemPolicy",
       "elasticfilesystem:DeleteReplicationConfiguration",
-      "elasticfilesystem:DescribeLifecycleConfiguration",
       "elasticfilesystem:DescribeAccountPreferences",
       "elasticfilesystem:DescribeBackupPolicy",
+      "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:DescribeFileSystemPolicy",
+      "elasticfilesystem:DescribeLifecycleConfiguration",
+      "elasticfilesystem:DescribeMountTargets",
+      "elasticfilesystem:DescribeMountTargetSecurityGroups",
       "elasticfilesystem:DescribeTags",
+      "elasticfilesystem:DescribeAccessPoints",
       "elasticfilesystem:DescribeReplicationConfigurations",
       "elasticfilesystem:ModifyMountTargetSecurityGroups",
       "elasticfilesystem:PutAccountPreferences",
@@ -586,9 +593,10 @@ data "aws_iam_policy_document" "cicd_gha_efs_policy" {
       "elasticfilesystem:Restore",
       "elasticfilesystem:ReplicationRead",
       "elasticfilesystem:ReplicationWrite",
-
-
-      
+      "ec2:DescribeNetworkInterfaceAttribute",
+      "ec2:CreateNetworkInterface",
+      "ec2:DeleteNetworkInterface",
+      "ec2:ModifyNetworkInterfaceAttribute",
     ]
     resources = ["*"]
   }
