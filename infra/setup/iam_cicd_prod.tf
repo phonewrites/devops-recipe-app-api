@@ -520,6 +520,78 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_alb_policy" {
   policy_arn = aws_iam_policy.cicd_gha_alb_policy.arn
 }
 
+resource "aws_iam_policy" "cicd_gha_cw_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-cw-policy"
+  description = "Allow managing CloudWatch resources in prod account for logging"
+  policy      = data.aws_iam_policy_document.cicd_gha_cw_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_cw_policy" {
+  statement {
+    sid    = "ManageCWLogs"
+    effect = "Allow"
+    actions = [
+      "logs:DeleteLogGroup",
+      "logs:DescribeLogGroups",
+      "logs:CreateLogGroup",
+      "logs:TagResource",
+      "logs:ListTagsLogGroup",
+      "logs:ListTagsForResource",
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_cw_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_cw_policy.arn
+}
+
+resource "aws_iam_policy" "cicd_gha_efs_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-efs-policy"
+  description = "Allow managing EFS resources in prod account for persistent data"
+  policy      = data.aws_iam_policy_document.cicd_gha_efs_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_efs_policy" {
+  statement { # Try sans managed AmazonElasticFileSystemFullAccess policy
+    sid    = "ManageEFS"
+    effect = "Allow"
+    actions = [
+      "ec2:DescribeNetworkInterfaceAttribute",
+      "elasticfilesystem:CreateTags",
+      "elasticfilesystem:CreateReplicationConfiguration",
+      "elasticfilesystem:DeleteTags",
+      "elasticfilesystem:DeleteFileSystemPolicy",
+      "elasticfilesystem:DeleteReplicationConfiguration",
+      "elasticfilesystem:DescribeAccountPreferences",
+      "elasticfilesystem:DescribeBackupPolicy",
+      "elasticfilesystem:DescribeFileSystemPolicy",
+      "elasticfilesystem:DescribeTags",
+      "elasticfilesystem:DescribeReplicationConfigurations",
+      "elasticfilesystem:ModifyMountTargetSecurityGroups",
+      "elasticfilesystem:PutAccountPreferences",
+      "elasticfilesystem:PutBackupPolicy",
+      "elasticfilesystem:PutLifecycleConfiguration",
+      "elasticfilesystem:PutFileSystemPolicy",
+      "elasticfilesystem:UpdateFileSystem",
+      "elasticfilesystem:UpdateFileSystemProtection",
+      "elasticfilesystem:UntagResource",
+      "elasticfilesystem:ListTagsForResource",
+      "elasticfilesystem:Backup",
+      "elasticfilesystem:Restore",
+      "elasticfilesystem:ReplicationRead",
+      "elasticfilesystem:ReplicationWrite",
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_efs_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_efs_policy.arn
+}
+
 resource "aws_iam_policy" "cicd_gha_iam_policy" {
   provider    = aws.prod
   name        = "cicd-gha-iam-policy"
@@ -600,32 +672,6 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
   policy_arn = aws_iam_policy.cicd_gha_iam_policy.arn
 }
 
-resource "aws_iam_policy" "cicd_gha_cw_policy" {
-  provider    = aws.prod
-  name        = "cicd-gha-cw-policy"
-  description = "Allow managing CloudWatch resources in prod account for logging"
-  policy      = data.aws_iam_policy_document.cicd_gha_cw_policy.json
-}
-data "aws_iam_policy_document" "cicd_gha_cw_policy" {
-  statement {
-    sid    = "ManageCWLogs"
-    effect = "Allow"
-    actions = [
-      "logs:DeleteLogGroup",
-      "logs:DescribeLogGroups",
-      "logs:CreateLogGroup",
-      "logs:TagResource",
-      "logs:ListTagsLogGroup",
-      "logs:ListTagsForResource",
-    ]
-    resources = ["*"]
-  }
-}
-resource "aws_iam_role_policy_attachment" "cicd_gha_cw_policy" {
-  provider   = aws.prod
-  role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.cicd_gha_cw_policy.arn
-}
 
 resource "aws_iam_policy" "cicd_gha_dns_policy" {
   provider    = aws.prod
@@ -660,49 +706,4 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_dns_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.cicd_gha_dns_policy.arn
-}
-
-resource "aws_iam_policy" "cicd_gha_efs_policy" {
-  provider    = aws.prod
-  name        = "cicd-gha-efs-policy"
-  description = "Allow managing EFS resources in prod account for persistent data"
-  policy      = data.aws_iam_policy_document.cicd_gha_efs_policy.json
-}
-data "aws_iam_policy_document" "cicd_gha_efs_policy" {
-  statement { # Try sans managed AmazonElasticFileSystemFullAccess policy
-    sid    = "ManageEFS"
-    effect = "Allow"
-    actions = [
-      "ec2:DescribeNetworkInterfaceAttribute",
-      "elasticfilesystem:CreateTags",
-      "elasticfilesystem:CreateReplicationConfiguration",
-      "elasticfilesystem:DeleteTags",
-      "elasticfilesystem:DeleteFileSystemPolicy",
-      "elasticfilesystem:DeleteReplicationConfiguration",
-      "elasticfilesystem:DescribeAccountPreferences",
-      "elasticfilesystem:DescribeBackupPolicy",
-      "elasticfilesystem:DescribeFileSystemPolicy",
-      "elasticfilesystem:DescribeTags",
-      "elasticfilesystem:DescribeReplicationConfigurations",
-      "elasticfilesystem:ModifyMountTargetSecurityGroups",
-      "elasticfilesystem:PutAccountPreferences",
-      "elasticfilesystem:PutBackupPolicy",
-      "elasticfilesystem:PutLifecycleConfiguration",
-      "elasticfilesystem:PutFileSystemPolicy",
-      "elasticfilesystem:UpdateFileSystem",
-      "elasticfilesystem:UpdateFileSystemProtection",
-      "elasticfilesystem:UntagResource",
-      "elasticfilesystem:ListTagsForResource",
-      "elasticfilesystem:Backup",
-      "elasticfilesystem:Restore",
-      "elasticfilesystem:ReplicationRead",
-      "elasticfilesystem:ReplicationWrite",
-    ]
-    resources = ["*"]
-  }
-}
-resource "aws_iam_role_policy_attachment" "cicd_gha_efs_policy" {
-  provider   = aws.prod
-  role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.cicd_gha_efs_policy.arn
 }
