@@ -30,83 +30,83 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
 }
 
 ##2. IAM policy for deployments by GitHub Actions
-resource "aws_iam_policy" "cicd_gh_actions_policy" {
-  provider    = aws.prod
-  name        = "${aws_iam_role.cicd_gh_actions_role.name}-policy"
-  description = "Allow managing resources in prod account for deployments"
-  policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
-}
+# resource "aws_iam_policy" "cicd_gh_actions_policy" {
+#   provider    = aws.prod
+#   name        = "${aws_iam_role.cicd_gh_actions_role.name}-policy"
+#   description = "Allow managing resources in prod account for deployments"
+#   policy      = data.aws_iam_policy_document.cicd_gh_actions_policy.json
+# }
 ###TO DO: Separate into separate IAM policies
 data "aws_iam_policy_document" "cicd_gh_actions_policy" {
-  statement {
-    sid       = "GetECRAuthToken"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
-  }
-  statement {
-    sid    = "ECRRepositoryPushPull"
-    effect = "Allow"
-    actions = [
-      "ecr:CompleteLayerUpload",
-      "ecr:UploadLayerPart",
-      "ecr:InitiateLayerUpload",
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:PutImage",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    resources = [
-      aws_ecr_repository.recipe_app_api_app.arn,
-      aws_ecr_repository.recipe_app_api_proxy.arn,
-    ]
-  }
-  statement {
-    sid    = "ManageVPC"
-    effect = "Allow"
-    actions = [
-      "ec2:DescribeVpcs",
-      "ec2:CreateTags",
-      "ec2:CreateVpc",
-      "ec2:DeleteVpc",
-      "ec2:DescribeSecurityGroups",
-      "ec2:DescribeSecurityGroupRules",
-      "ec2:DeleteSubnet",
-      "ec2:DeleteSecurityGroup",
-      "ec2:DescribeNetworkInterfaces",
-      "ec2:DetachInternetGateway",
-      "ec2:DescribeInternetGateways",
-      "ec2:DeleteInternetGateway",
-      "ec2:DetachNetworkInterface",
-      "ec2:DescribeVpcEndpoints",
-      "ec2:DescribeRouteTables",
-      "ec2:DescribeAvailabilityZones", #for data.aws_availability_zones
-      "ec2:DeleteRouteTable",
-      "ec2:DeleteVpcEndpoints",
-      "ec2:DisassociateRouteTable",
-      "ec2:DeleteRoute",
-      "ec2:DescribePrefixLists",
-      "ec2:DescribeSubnets",
-      "ec2:DescribeVpcAttribute",
-      "ec2:DescribeNetworkAcls",
-      "ec2:AssociateRouteTable",
-      "ec2:AuthorizeSecurityGroupIngress",
-      "ec2:RevokeSecurityGroupEgress",
-      "ec2:CreateSecurityGroup",
-      "ec2:AuthorizeSecurityGroupEgress",
-      "ec2:CreateVpcEndpoint",
-      "ec2:ModifyVpcEndpoint",
-      "ec2:ModifySubnetAttribute",
-      "ec2:CreateSubnet",
-      "ec2:CreateRoute",
-      "ec2:CreateRouteTable",
-      "ec2:CreateInternetGateway",
-      "ec2:AttachInternetGateway",
-      "ec2:ModifyVpcAttribute",
-      "ec2:RevokeSecurityGroupIngress",
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid       = "GetECRAuthToken"
+  #   effect    = "Allow"
+  #   actions   = ["ecr:GetAuthorizationToken"]
+  #   resources = ["*"]
+  # }
+  # statement {
+  #   sid    = "ECRRepositoryPushPull"
+  #   effect = "Allow"
+  #   actions = [
+  #     "ecr:CompleteLayerUpload",
+  #     "ecr:UploadLayerPart",
+  #     "ecr:InitiateLayerUpload",
+  #     "ecr:BatchCheckLayerAvailability",
+  #     "ecr:PutImage",
+  #     "ecr:BatchGetImage",
+  #     "ecr:GetDownloadUrlForLayer",
+  #   ]
+  #   resources = [
+  #     aws_ecr_repository.recipe_app_api_app.arn,
+  #     aws_ecr_repository.recipe_app_api_proxy.arn,
+  #   ]
+  # }
+  # statement {
+  #   sid    = "ManageVPC"
+  #   effect = "Allow"
+  #   actions = [
+  #     "ec2:DescribeVpcs",
+  #     "ec2:CreateTags",
+  #     "ec2:CreateVpc",
+  #     "ec2:DeleteVpc",
+  #     "ec2:DescribeSecurityGroups",
+  #     "ec2:DescribeSecurityGroupRules",
+  #     "ec2:DeleteSubnet",
+  #     "ec2:DeleteSecurityGroup",
+  #     "ec2:DescribeNetworkInterfaces",
+  #     "ec2:DetachInternetGateway",
+  #     "ec2:DescribeInternetGateways",
+  #     "ec2:DeleteInternetGateway",
+  #     "ec2:DetachNetworkInterface",
+  #     "ec2:DescribeVpcEndpoints",
+  #     "ec2:DescribeRouteTables",
+  #     "ec2:DescribeAvailabilityZones", #for data.aws_availability_zones
+  #     "ec2:DeleteRouteTable",
+  #     "ec2:DeleteVpcEndpoints",
+  #     "ec2:DisassociateRouteTable",
+  #     "ec2:DeleteRoute",
+  #     "ec2:DescribePrefixLists",
+  #     "ec2:DescribeSubnets",
+  #     "ec2:DescribeVpcAttribute",
+  #     "ec2:DescribeNetworkAcls",
+  #     "ec2:AssociateRouteTable",
+  #     "ec2:AuthorizeSecurityGroupIngress",
+  #     "ec2:RevokeSecurityGroupEgress",
+  #     "ec2:CreateSecurityGroup",
+  #     "ec2:AuthorizeSecurityGroupEgress",
+  #     "ec2:CreateVpcEndpoint",
+  #     "ec2:ModifyVpcEndpoint",
+  #     "ec2:ModifySubnetAttribute",
+  #     "ec2:CreateSubnet",
+  #     "ec2:CreateRoute",
+  #     "ec2:CreateRouteTable",
+  #     "ec2:CreateInternetGateway",
+  #     "ec2:AttachInternetGateway",
+  #     "ec2:ModifyVpcAttribute",
+  #     "ec2:RevokeSecurityGroupIngress",
+  #   ]
+  #   resources = ["*"]
+  # }
   statement {
     sid    = "ManageRDS"
     effect = "Allow"
@@ -316,7 +316,105 @@ resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy
   policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
 }
 
+####### TO DO: Separate into separate IAM policies
+# resource "aws_iam_policy" "cicd_gha_ecr_policy" {
+#   provider    = aws.prod
+#   name        = "cicd-gha-ecr-policy"
+#   description = "Allow managing ECR resources in prod account for deployments"
+#   policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+# }
+# data "aws_iam_policy_document" "cicd_gha_ecr_policy" {
+#   statement {
+#     sid       = "GetECRAuthToken"
+#     effect    = "Allow"
+#     actions   = ["ecr:GetAuthorizationToken"]
+#     resources = ["*"]
+#   }
+#   statement {
+#     sid    = "ECRRepositoryPushPull"
+#     effect = "Allow"
+#     actions = [
+#       "ecr:CompleteLayerUpload",
+#       "ecr:UploadLayerPart",
+#       "ecr:InitiateLayerUpload",
+#       "ecr:BatchCheckLayerAvailability",
+#       "ecr:PutImage",
+#       "ecr:BatchGetImage",
+#       "ecr:GetDownloadUrlForLayer",
+#     ]
+#     resources = [
+#       aws_ecr_repository.recipe_app_api_app.arn,
+#       aws_ecr_repository.recipe_app_api_proxy.arn,
+#     ]
+#   }  
+# }
+# resource "aws_iam_role_policy_attachment" "cicd_gha_ecr_policy" {
+#   provider   = aws.prod
+#   role       = aws_iam_role.cicd_gh_actions_role.name
+#   policy_arn = aws_iam_policy.cicd_gha_ecr_policy.arn
+# }
 
+
+
+# resource "aws_iam_policy" "cicd_gha_ecr_policy" {
+#   provider    = aws.prod
+#   name        = "cicd-gha-ecr-policy"
+#   description = "Allow managing ECR resources in prod account for deployments"
+#   policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+# }
+# data "aws_iam_policy_document" "cicd_gha_ecr_policy" {
+#   statement {
+#     sid    = "ManageVPC"
+#     effect = "Allow"
+#     actions = [
+#       "ec2:DescribeVpcs",
+#       "ec2:CreateTags",
+#       "ec2:CreateVpc",
+#       "ec2:DeleteVpc",
+#       "ec2:DescribeSecurityGroups",
+#       "ec2:DescribeSecurityGroupRules",
+#       "ec2:DeleteSubnet",
+#       "ec2:DeleteSecurityGroup",
+#       "ec2:DescribeNetworkInterfaces",
+#       "ec2:DetachInternetGateway",
+#       "ec2:DescribeInternetGateways",
+#       "ec2:DeleteInternetGateway",
+#       "ec2:DetachNetworkInterface",
+#       "ec2:DescribeVpcEndpoints",
+#       "ec2:DescribeRouteTables",
+#       "ec2:DescribeAvailabilityZones", #for data.aws_availability_zones
+#       "ec2:DeleteRouteTable",
+#       "ec2:DeleteVpcEndpoints",
+#       "ec2:DisassociateRouteTable",
+#       "ec2:DeleteRoute",
+#       "ec2:DescribePrefixLists",
+#       "ec2:DescribeSubnets",
+#       "ec2:DescribeVpcAttribute",
+#       "ec2:DescribeNetworkAcls",
+#       "ec2:AssociateRouteTable",
+#       "ec2:AuthorizeSecurityGroupIngress",
+#       "ec2:RevokeSecurityGroupEgress",
+#       "ec2:CreateSecurityGroup",
+#       "ec2:AuthorizeSecurityGroupEgress",
+#       "ec2:CreateVpcEndpoint",
+#       "ec2:ModifyVpcEndpoint",
+#       "ec2:ModifySubnetAttribute",
+#       "ec2:CreateSubnet",
+#       "ec2:CreateRoute",
+#       "ec2:CreateRouteTable",
+#       "ec2:CreateInternetGateway",
+#       "ec2:AttachInternetGateway",
+#       "ec2:ModifyVpcAttribute",
+#       "ec2:RevokeSecurityGroupIngress",
+#     ]
+#     resources = ["*"]
+#   }
+# }
+# resource "aws_iam_role_policy_attachment" "cicd_gha_ecr_policy" {
+#   provider   = aws.prod
+#   role       = aws_iam_role.cicd_gh_actions_role.name
+#   policy_arn = aws_iam_policy.cicd_gha_ecr_policy.arn
+# }
 
 
 
