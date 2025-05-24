@@ -25,11 +25,6 @@ resource "aws_efs_access_point" "media" {
   }
 }
 
-# resource "aws_iam_service_linked_role" "efs_service_linked_role" {
-#   aws_service_name = "elasticfilesystem.amazonaws.com"
-#   description      = "Service-linked role needed by the EFS for first deployments"
-# }
-
 # Security Group to implement Access Control to EFS
 resource "aws_security_group" "efs_access" {
   name        = "${local.prefix}-efs-access"

@@ -375,21 +375,21 @@ data "aws_iam_policy_document" "cicd_gha_iam_policy" {
       ]
     }
   }
-  # statement {
-  #   #Delete service-linked roles selectively during Destroy runs
-  #   sid    = "DeleteServiceLinkedRoles"
-  #   effect = "Allow"
-  #   actions = [
-  #     "iam:DeleteServiceLinkedRole",
-  #     "iam:GetServiceLinkedRoleDeletionStatus"
-  #   ]
-  #   resources = [
-  #     "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
-  #     "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-  #     "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
-  #     "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
-  #   ]
-  # }
+  statement {
+    #Delete service-linked roles selectively during Destroy runs
+    sid    = "DeleteServiceLinkedRoles"
+    effect = "Allow"
+    actions = [
+      "iam:DeleteServiceLinkedRole",
+      "iam:GetServiceLinkedRoleDeletionStatus"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
+    ]
+  }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
   provider   = aws.prod
