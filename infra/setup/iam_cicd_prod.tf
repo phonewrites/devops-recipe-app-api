@@ -317,42 +317,42 @@ resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy
 }
 
 ####### TO DO: Separate into separate IAM policies
-# resource "aws_iam_policy" "cicd_gha_ecr_policy" {
-#   provider    = aws.prod
-#   name        = "cicd-gha-ecr-policy"
-#   description = "Allow managing ECR resources in prod account for deployments"
-#   policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
-# }
-# data "aws_iam_policy_document" "cicd_gha_ecr_policy" {
-#   statement {
-#     sid       = "GetECRAuthToken"
-#     effect    = "Allow"
-#     actions   = ["ecr:GetAuthorizationToken"]
-#     resources = ["*"]
-#   }
-#   statement {
-#     sid    = "ECRRepositoryPushPull"
-#     effect = "Allow"
-#     actions = [
-#       "ecr:CompleteLayerUpload",
-#       "ecr:UploadLayerPart",
-#       "ecr:InitiateLayerUpload",
-#       "ecr:BatchCheckLayerAvailability",
-#       "ecr:PutImage",
-#       "ecr:BatchGetImage",
-#       "ecr:GetDownloadUrlForLayer",
-#     ]
-#     resources = [
-#       aws_ecr_repository.recipe_app_api_app.arn,
-#       aws_ecr_repository.recipe_app_api_proxy.arn,
-#     ]
-#   }  
-# }
-# resource "aws_iam_role_policy_attachment" "cicd_gha_ecr_policy" {
-#   provider   = aws.prod
-#   role       = aws_iam_role.cicd_gh_actions_role.name
-#   policy_arn = aws_iam_policy.cicd_gha_ecr_policy.arn
-# }
+resource "aws_iam_policy" "cicd_gha_ecr_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-ecr-policy"
+  description = "Allow managing ECR resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_ecr_policy" {
+  statement {
+    sid       = "GetECRAuthToken"
+    effect    = "Allow"
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ECRRepositoryPushPull"
+    effect = "Allow"
+    actions = [
+      "ecr:CompleteLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:InitiateLayerUpload",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+    ]
+    resources = [
+      aws_ecr_repository.recipe_app_api_app.arn,
+      aws_ecr_repository.recipe_app_api_proxy.arn,
+    ]
+  }  
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_ecr_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_ecr_policy.arn
+}
 
 
 
