@@ -316,6 +316,8 @@ resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy
   policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess"
 }
 
+
+
 ####### TO DO: Separate into separate IAM policies
 resource "aws_iam_policy" "cicd_gha_ecr_policy" {
   provider    = aws.prod
@@ -411,8 +413,41 @@ data "aws_iam_policy_document" "cicd_gha_vpc_policy" {
 resource "aws_iam_role_policy_attachment" "cicd_gha_vpc_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.cicd_gha_ecr_policy.arn
+  policy_arn = aws_iam_policy.cicd_gha_vpc_policy.arn
 }
+
+resource "aws_iam_policy" "cicd_gha_rds_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-rds-policy"
+  description = "Allow managing ECR resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_rds_policy" {
+  statement {
+    sid    = "ManageRDS"
+    effect = "Allow"
+    actions = [
+      "rds:DescribeDBSubnetGroups",
+      "rds:DescribeDBInstances",
+      "rds:CreateDBSubnetGroup",
+      "rds:DeleteDBSubnetGroup",
+      "rds:CreateDBInstance",
+      "rds:DeleteDBInstance",
+      "rds:ListTagsForResource",
+      "rds:ModifyDBInstance",
+      "rds:AddTagsToResource"
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_rds_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_rds_policy.arn
+}
+
+
+
 
 
 
