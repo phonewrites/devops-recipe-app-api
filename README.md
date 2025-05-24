@@ -125,12 +125,11 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 - Using AWS Identity Center/SSO instead of IAM users for authentication.
 - Using granted instead of aws-vault to use locally configured AWS credentials to authenticate an SSO User with Administrator access.
 - Using IAM roles & chaining them from an AWS Management account to the account where the service is actually launched, instead of IAM users (with access keys & secrets, i.e. long-lived creds).
-- Consolidated all IAM permissions needed by the main CICD role into a single policy, instead of having multiple policies for each service.
 - Deployment of Networking configuration is extendable for an organisation with different network sizes, more than 2 tiers of subnets, etc.
 - Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
-- IAM permissions updated, espcially regarding the Service Linked Roles for RDS & ECS.
-- docker-compose files are modified to work with the changes made above.
+- IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
+- `docker-compose` files are modified to work with the changes made above.
 
 
 
