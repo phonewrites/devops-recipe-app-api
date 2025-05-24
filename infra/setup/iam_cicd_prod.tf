@@ -559,11 +559,14 @@ data "aws_iam_policy_document" "cicd_gha_efs_policy" {
     effect = "Allow"
     actions = [
       "ec2:DescribeNetworkInterfaceAttribute",
+      "elasticfilesystem:CreateFileSystem",
+      "elasticfilesystem:DescribeFileSystems",
       "elasticfilesystem:CreateTags",
       "elasticfilesystem:CreateReplicationConfiguration",
       "elasticfilesystem:DeleteTags",
       "elasticfilesystem:DeleteFileSystemPolicy",
       "elasticfilesystem:DeleteReplicationConfiguration",
+      "elasticfilesystem:DescribeLifecycleConfiguration",
       "elasticfilesystem:DescribeAccountPreferences",
       "elasticfilesystem:DescribeBackupPolicy",
       "elasticfilesystem:DescribeFileSystemPolicy",
@@ -576,12 +579,16 @@ data "aws_iam_policy_document" "cicd_gha_efs_policy" {
       "elasticfilesystem:PutFileSystemPolicy",
       "elasticfilesystem:UpdateFileSystem",
       "elasticfilesystem:UpdateFileSystemProtection",
+      "elasticfilesystem:TagResource",
       "elasticfilesystem:UntagResource",
       "elasticfilesystem:ListTagsForResource",
       "elasticfilesystem:Backup",
       "elasticfilesystem:Restore",
       "elasticfilesystem:ReplicationRead",
       "elasticfilesystem:ReplicationWrite",
+
+
+      
     ]
     resources = ["*"]
   }
