@@ -168,42 +168,19 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   ]
   #   resources = ["*"]
   # }
-  statement {
-    sid    = "ManageIAM"
-    effect = "Allow"
-    actions = [
-      "iam:ListInstanceProfilesForRole",
-      "iam:ListAttachedRolePolicies",
-      "iam:DeleteRole",
-      "iam:ListPolicyVersions",
-      "iam:DeletePolicy",
-      "iam:DetachRolePolicy",
-      "iam:ListRolePolicies",
-      "iam:GetRole",
-      "iam:GetPolicyVersion",
-      "iam:GetPolicy",
-      "iam:CreateRole",
-      "iam:CreatePolicy",
-      "iam:AttachRolePolicy",
-      "iam:TagRole",
-      "iam:TagPolicy",
-      "iam:PassRole"
-    ]
-    resources = ["*"]
-  }
-  statement {
-    sid    = "ManageCWLogs"
-    effect = "Allow"
-    actions = [
-      "logs:DeleteLogGroup",
-      "logs:DescribeLogGroups",
-      "logs:CreateLogGroup",
-      "logs:TagResource",
-      "logs:ListTagsLogGroup",
-      "logs:ListTagsForResource",
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "ManageCWLogs"
+  #   effect = "Allow"
+  #   actions = [
+  #     "logs:DeleteLogGroup",
+  #     "logs:DescribeLogGroups",
+  #     "logs:CreateLogGroup",
+  #     "logs:TagResource",
+  #     "logs:ListTagsLogGroup",
+  #     "logs:ListTagsForResource",
+  #   ]
+  #   resources = ["*"]
+  # }
   # statement { # Try sans managed AmazonElasticFileSystemFullAccess policy
   #   sid    = "ManageEFS"
   #   effect = "Allow"
@@ -256,45 +233,68 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
     ]
     resources = ["*"]
   }
-  statement {
-    #Create service-linked roles needed for first deployments
-    sid    = "CreateServiceLinkedRoles"
-    effect = "Allow"
-    actions = [
-      "iam:CreateServiceLinkedRole",
-    ]
-    resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
-      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
-      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "iam:AWSServiceName"
-      values = [
-        "rds.amazonaws.com",
-        "ecs.amazonaws.com",
-        "elasticloadbalancing.amazonaws.com",
-        "elasticfilesystem.amazonaws.com",
-      ]
-    }
-  }
-  statement {
-    #Delete service-linked roles during Destroy workflows
-    sid    = "DeleteServiceLinkedRoles"
-    effect = "Allow"
-    actions = [
-      "iam:DeleteServiceLinkedRole",
-      "iam:GetServiceLinkedRoleDeletionStatus"
-    ]
-    resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
-      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
-      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
-    ]
-  }
+  # statement {
+  #   sid    = "ManageIAM"
+  #   effect = "Allow"
+  #   actions = [
+  #     "iam:ListInstanceProfilesForRole",
+  #     "iam:ListAttachedRolePolicies",
+  #     "iam:DeleteRole",
+  #     "iam:ListPolicyVersions",
+  #     "iam:DeletePolicy",
+  #     "iam:DetachRolePolicy",
+  #     "iam:ListRolePolicies",
+  #     "iam:GetRole",
+  #     "iam:GetPolicyVersion",
+  #     "iam:GetPolicy",
+  #     "iam:CreateRole",
+  #     "iam:CreatePolicy",
+  #     "iam:AttachRolePolicy",
+  #     "iam:TagRole",
+  #     "iam:TagPolicy",
+  #     "iam:PassRole"
+  #   ]
+  #   resources = ["*"]
+  # }
+  # statement {
+  #   #Create service-linked roles needed for first deployments
+  #   sid    = "CreateServiceLinkedRoles"
+  #   effect = "Allow"
+  #   actions = [
+  #     "iam:CreateServiceLinkedRole",
+  #   ]
+  #   resources = [
+  #     "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+  #     "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+  #     "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+  #     "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
+  #   ]
+  #   condition {
+  #     test     = "StringEquals"
+  #     variable = "iam:AWSServiceName"
+  #     values = [
+  #       "rds.amazonaws.com",
+  #       "ecs.amazonaws.com",
+  #       "elasticloadbalancing.amazonaws.com",
+  #       "elasticfilesystem.amazonaws.com",
+  #     ]
+  #   }
+  # }
+  # statement {
+  #   #Delete service-linked roles during Destroy workflows
+  #   sid    = "DeleteServiceLinkedRoles"
+  #   effect = "Allow"
+  #   actions = [
+  #     "iam:DeleteServiceLinkedRole",
+  #     "iam:GetServiceLinkedRoleDeletionStatus"
+  #   ]
+  #   resources = [
+  #     "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+  #     "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+  #     "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+  #     "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
+  #   ]
+  # }
   # statement {
   #   sid    = "S3FullAccess"
   #   effect = "Allow"
@@ -305,11 +305,11 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   resources = ["*"]
   # }
 }
-resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
-  provider   = aws.prod
-  role       = aws_iam_role.cicd_gh_actions_role.name
-  policy_arn = aws_iam_policy.cicd_gh_actions_policy.arn
-}
+# resource "aws_iam_role_policy_attachment" "cicd_gh_actions_policy" {
+#   provider   = aws.prod
+#   role       = aws_iam_role.cicd_gh_actions_role.name
+#   policy_arn = aws_iam_policy.cicd_gh_actions_policy.arn
+# }
 resource "aws_iam_role_policy_attachment" "amazon_managed_efs_full_access_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
@@ -453,7 +453,7 @@ resource "aws_iam_policy" "cicd_gha_ecs_policy" {
   policy      = data.aws_iam_policy_document.cicd_gha_ecs_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
-    statement {
+  statement {
     sid    = "ManageECS"
     effect = "Allow"
     actions = [
@@ -511,10 +511,117 @@ data "aws_iam_policy_document" "cicd_gha_alb_policy" {
       "elasticloadbalancing:DescribeListenerAttributes",
     ]
     resources = ["*"]
-  }  
+  }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_alb_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.cicd_gha_alb_policy.arn
+}
+
+resource "aws_iam_policy" "cicd_gha_iam_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-iam-policy"
+  description = "Allow managing IAM resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_iam_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_iam_policy" {
+  statement {
+    sid    = "ManageBasicIAM"
+    effect = "Allow"
+    actions = [
+      "iam:ListInstanceProfilesForRole",
+      "iam:ListAttachedRolePolicies",
+      "iam:DeleteRole",
+      "iam:ListPolicyVersions",
+      "iam:DeletePolicy",
+      "iam:DetachRolePolicy",
+      "iam:ListRolePolicies",
+      "iam:GetRole",
+      "iam:GetPolicyVersion",
+      "iam:GetPolicy",
+      "iam:CreateRole",
+      "iam:CreatePolicy",
+      "iam:AttachRolePolicy",
+      "iam:TagRole",
+      "iam:TagPolicy",
+      "iam:PassRole",
+      # Service-linked roles permissions for all possible roles
+      # "iam:CreateServiceLinkedRole",
+      # "iam:DeleteServiceLinkedRole",
+      # "iam:GetServiceLinkedRoleDeletionStatus",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    #Create service-linked roles selectively for first deployments
+    sid    = "CreateServiceLinkedRoles"
+    effect = "Allow"
+    actions = [
+      "iam:CreateServiceLinkedRole",
+    ]
+    resources = [
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
+    ]
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values = [
+        "rds.amazonaws.com",
+        "ecs.amazonaws.com",
+        "elasticloadbalancing.amazonaws.com",
+        "elasticfilesystem.amazonaws.com",
+      ]
+    }
+  }
+  statement {
+    #Delete service-linked roles selectively during Destroy runs
+    sid    = "DeleteServiceLinkedRoles"
+    effect = "Allow"
+    actions = [
+      "iam:DeleteServiceLinkedRole",
+      "iam:GetServiceLinkedRoleDeletionStatus"
+    ]
+    resources = [
+      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
+      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
+    ]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_iam_policy.arn
+}
+
+resource "aws_iam_policy" "cicd_gha_cw_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-cw-policy"
+  description = "Allow managing CloudWatch resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_cw_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_cw_policy" {
+    statement {
+    sid    = "ManageCWLogs"
+    effect = "Allow"
+    actions = [
+      "logs:DeleteLogGroup",
+      "logs:DescribeLogGroups",
+      "logs:CreateLogGroup",
+      "logs:TagResource",
+      "logs:ListTagsLogGroup",
+      "logs:ListTagsForResource",
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_cw_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_cw_policy.arn
 }
