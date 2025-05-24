@@ -123,25 +123,25 @@ data "aws_iam_policy_document" "cicd_gh_actions_policy" {
   #   ]
   #   resources = ["*"]
   # }
-  statement {
-    sid    = "ManageECS"
-    effect = "Allow"
-    actions = [
-      "ecs:DescribeClusters",
-      "ecs:DeregisterTaskDefinition",
-      "ecs:DeleteCluster",
-      "ecs:DescribeServices",
-      "ecs:UpdateService",
-      "ecs:DeleteService",
-      "ecs:DescribeTaskDefinition",
-      "ecs:CreateService",
-      "ecs:RegisterTaskDefinition",
-      "ecs:CreateCluster",
-      "ecs:UpdateCluster",
-      "ecs:TagResource",
-    ]
-    resources = ["*"]
-  }
+  # statement {
+  #   sid    = "ManageECS"
+  #   effect = "Allow"
+  #   actions = [
+  #     "ecs:DescribeClusters",
+  #     "ecs:DeregisterTaskDefinition",
+  #     "ecs:DeleteCluster",
+  #     "ecs:DescribeServices",
+  #     "ecs:UpdateService",
+  #     "ecs:DeleteService",
+  #     "ecs:DescribeTaskDefinition",
+  #     "ecs:CreateService",
+  #     "ecs:RegisterTaskDefinition",
+  #     "ecs:CreateCluster",
+  #     "ecs:UpdateCluster",
+  #     "ecs:TagResource",
+  #   ]
+  #   resources = ["*"]
+  # }
   statement {
     sid    = "ManageALB"
     effect = "Allow"
@@ -359,7 +359,7 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_ecr_policy" {
 resource "aws_iam_policy" "cicd_gha_vpc_policy" {
   provider    = aws.prod
   name        = "cicd-gha-vpc-policy"
-  description = "Allow managing ECR resources in prod account for deployments"
+  description = "Allow managing Network resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_vpc_policy" {
@@ -419,7 +419,7 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_vpc_policy" {
 resource "aws_iam_policy" "cicd_gha_rds_policy" {
   provider    = aws.prod
   name        = "cicd-gha-rds-policy"
-  description = "Allow managing ECR resources in prod account for deployments"
+  description = "Allow managing RDS resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_rds_policy" {
@@ -447,7 +447,36 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_rds_policy" {
 }
 
 
-
-
-
+resource "aws_iam_policy" "cicd_gha_ecs_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-ecs-policy"
+  description = "Allow managing ECS resources in prod account for deployments"
+  policy      = data.aws_iam_policy_document.cicd_gha_ecr_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
+    statement {
+    sid    = "ManageECS"
+    effect = "Allow"
+    actions = [
+      "ecs:DescribeClusters",
+      "ecs:DeregisterTaskDefinition",
+      "ecs:DeleteCluster",
+      "ecs:DescribeServices",
+      "ecs:UpdateService",
+      "ecs:DeleteService",
+      "ecs:DescribeTaskDefinition",
+      "ecs:CreateService",
+      "ecs:RegisterTaskDefinition",
+      "ecs:CreateCluster",
+      "ecs:UpdateCluster",
+      "ecs:TagResource",
+    ]
+    resources = ["*"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_ecs_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_ecs_policy.arn
+}
 
