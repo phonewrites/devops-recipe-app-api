@@ -9,11 +9,6 @@ resource "aws_route53_record" "app_cname_record" {
   type    = "CNAME"
   records = [aws_lb.api.dns_name]
   ttl     = 60
-  # lifecycle {
-  #   replace_triggered_by = [
-  #     data.aws_route53_zone.public_zone
-  #   ]
-  # }
 }
 resource "aws_acm_certificate" "cert" {
   domain_name       = aws_route53_record.app_cname_record.name
