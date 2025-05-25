@@ -114,10 +114,10 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
         --command "/bin/sh"
     python manage.py createsuperuser
     ```
-
-
-
-
+- *Setg up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/api/health-check/`  
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
 
 
 ## Major changes compared to the original course code:

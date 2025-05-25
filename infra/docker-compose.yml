@@ -18,3 +18,5 @@ services:
       - TF_VAR_django_secret_key=${TF_VAR_django_secret_key}
       - TF_VAR_ecr_proxy_image=${TF_VAR_ecr_proxy_image}
       - TF_VAR_ecr_app_image=${TF_VAR_ecr_app_image}
+        #TESTING: Pass domain from GH Actions Variable
+      - TF_VAR_custom_domain=${TF_VAR_custom_domain}

@@ -35,9 +35,10 @@ variable "django_secret_key" {
   description = "Secret key for Django"
 }
 
-variable "dns_zone_name" { #TO TRY: Pass domain from GH Actions Variable
-  description = "Domain name"
-  default     = "phonewrites.com"
+variable "custom_domain" { #TESTING: Pass domain from GH Actions Variable
+  description = "Your Route53 hosted zone name (e.g. example.com)"
+  type        = string
+  # default     = "phonewrites.com"
 }
 
 variable "subdomain" {

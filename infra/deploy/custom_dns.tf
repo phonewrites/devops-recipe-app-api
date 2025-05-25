@@ -1,6 +1,6 @@
 # Custom domain's hosted zone is set up in Route53 outside Terraform
 data "aws_route53_zone" "public_zone" {
-  name = "${var.dns_zone_name}."
+  name = "${var.custom_domain}."
 }
 resource "aws_route53_record" "app_cname_record" {
   zone_id = data.aws_route53_zone.public_zone.zone_id
