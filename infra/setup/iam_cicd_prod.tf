@@ -221,6 +221,7 @@ data "aws_iam_policy_document" "cicd_gha_alb_policy" {
       "elasticloadbalancing:ModifyListenerAttributes",
       "elasticloadbalancing:DescribeListenerAttributes",
       "ec2:DescribeAccountAttributes",
+      "ec2:GetSecurityGroupsForVpc",
     ]
     resources = ["*"]
   }
