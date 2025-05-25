@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "cicd_assume_role_policy" {
 }
 
 
-##1. IAM policy to assume the Terraform Backend Access role in mgmt account
+##1 IAM policy to assume the Terraform Backend Access role in mgmt account
 resource "aws_iam_policy" "cicd_assume_tf_backend_access_role_policy" {
   provider = aws.prod
   name     = "cicd-assume-tf-backend-access-role-policy"
@@ -29,7 +29,7 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
   policy_arn = aws_iam_policy.cicd_assume_tf_backend_access_role_policy.arn
 }
 
-##2. IAM policies for deployments by GitHub Actions
+##2-10 IAM policies for deployments by GitHub Actions
 resource "aws_iam_policy" "cicd_gha_ecr_policy" {
   provider    = aws.prod
   name        = "cicd-gha-ecr-policy"
@@ -345,10 +345,8 @@ data "aws_iam_policy_document" "cicd_gha_iam_policy" {
       "iam:TagRole",
       "iam:TagPolicy",
       "iam:PassRole",
-      # Service-linked roles permissions for all possible roles
+      # Create Service-linked roles permissions for all possible roles
       # "iam:CreateServiceLinkedRole",
-      # "iam:DeleteServiceLinkedRole",
-      # "iam:GetServiceLinkedRoleDeletionStatus",
     ]
     resources = ["*"]
   }
@@ -375,21 +373,6 @@ data "aws_iam_policy_document" "cicd_gha_iam_policy" {
         "elasticfilesystem.amazonaws.com",
       ]
     }
-  }
-  statement {
-    #Delete service-linked roles selectively during Destroy runs
-    sid    = "DeleteServiceLinkedRoles"
-    effect = "Allow"
-    actions = [
-      "iam:DeleteServiceLinkedRole",
-      "iam:GetServiceLinkedRoleDeletionStatus"
-    ]
-    resources = [
-      "arn:aws:iam::*:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
-      "arn:aws:iam::*:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
-      "arn:aws:iam::*:role/aws-service-role/elasticloadbalancing.amazonaws.com/AWSServiceRoleForElasticLoadBalancing",
-      "arn:aws:iam::*:role/aws-service-role/elasticfilesystem.amazonaws.com/AWSServiceRoleForAmazonElasticFileSystem",
-    ]
   }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_iam_policy" {
