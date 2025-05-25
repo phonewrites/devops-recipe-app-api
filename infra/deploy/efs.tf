@@ -1,5 +1,3 @@
-########## TESTING ####################
-
 # EFS resources for persistent media storage
 resource "aws_efs_file_system" "media" {
   encrypted = true #Encryption at rest
@@ -45,4 +43,3 @@ resource "aws_vpc_security_group_ingress_rule" "inbound_efs_access" {
   referenced_security_group_id = aws_security_group.ecs_access.id
   description                  = "Inbound NFS traffic from application"
 }
-########## TESTING ####################
