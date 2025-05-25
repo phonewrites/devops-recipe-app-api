@@ -142,7 +142,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
     `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
 
 
-## Major changes compared to the original course code:
+## Major changes made to the original repo's code:
 - Using an AWS organisation (multiple AWS accounts) setup, with a management account and one member account (prod) to simulate a real-world scenario. However, the code can be extended to support multiple member accounts.
 - Using AWS Identity Center/SSO instead of IAM users for authentication.
 - Using granted instead of aws-vault to use locally configured AWS credentials to authenticate an SSO User with Administrator access.
