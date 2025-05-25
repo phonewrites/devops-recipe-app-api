@@ -37,7 +37,7 @@ variable "django_secret_key" {
 
 variable "custom_domain" {
   description = "Your Route53 hosted zone name (e.g. example.com)"
-  type = string
+  type        = string
 }
 variable "subdomain" {
   description = "Subdomain for each environment"
