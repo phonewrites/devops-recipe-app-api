@@ -114,10 +114,10 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
         --command "/bin/sh"
     python manage.py createsuperuser
     ```
-
-
-
-
+- *Setg up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/api/health-check/`  
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
+    `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
 
 
 ## Major changes compared to the original course code:
@@ -129,7 +129,8 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 - Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
 - IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
-- `docker-compose` files are modified to work with the changes made above.
+- Custom domain is passed at runtime via the environment using GitHub-Actions a variable, instead of hardcoding it in the Terraform code.
+- `docker-compose.yml` used for deployment is modified to work with the changes made above.
 
 
 
