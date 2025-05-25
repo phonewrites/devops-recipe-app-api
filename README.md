@@ -1,4 +1,6 @@
-# DevOps Deployment Automation with Terraform, AWS and Docker - Code modified from 
+# DevOps Deployment Automation with Terraform, AWS and Docker 
+Modified code from [LondonAppDeveloper/devops-recipe-app-api](https://github.com/LondonAppDeveloper/devops-recipe-app-api)
+
 
 ## Local Development
 
@@ -56,6 +58,7 @@ docker compose -f docker-compose-deploy.yml build
 ```
 
 ## Terraform Setup
+
 These resources are created & managed outside Terraform & are used to store the Terraform state.
 Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
 ```
@@ -78,6 +81,25 @@ docker compose run --rm terraform -chdir=setup apply
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
 ## Terraform deploy setup
+
+### GitHub Actions Variables
+**Variables:**
+
+`DOCKERHUB_USER`: Username for Docker Hub for avoiding Docker Pull rate limit issues.  
+`OIDC_GH_ACTIONS_ROLE_MGMT`: Role in the management account that allows GitHub Actions to assume a role in the *prod* account.  
+`CICD_GH_ACTIONS_ROLE_PROD`: Role in the *prod* account that allows GitHub Actions to perform deployments.  
+`ECR_APP_REPOSITORY_NAME`: Name of the ECR repository for the app image *(not repository URI)*.  
+`ECR_PROXY_REPOSITORY_NAME`: Name of the ECR repository for the proxy image *(not repository URI)*.  
+`TF_VAR_CUSTOM_DOMAIN`: Custom domain name for the application, passed as an environment variable to the Terraform code.
+
+**Secrets:**
+
+`DOCKERHUB_TOKEN`: Token created in DOCKERHUB_USER in Docker Hub.  
+`TF_VAR_DB_PASSWORD`: Password for the RDS database (make something up).  
+`TF_VAR_DJANGO_SECRET_KEY`: Secret key for the Django app (make something up).  
+
+
+
 - Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
     ```
     docker compose run --rm terraform -chdir=setup fmt
