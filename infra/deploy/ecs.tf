@@ -23,12 +23,8 @@ resource "aws_ecs_service" "service" {
     container_name   = "proxy"
     container_port   = 8000
   }
-  depends_on = [aws_iam_service_linked_role.ecs_service_linked_role]
 }
-resource "aws_iam_service_linked_role" "ecs_service_linked_role" {
-  aws_service_name = "ecs.amazonaws.com"
-  description      = "Service-linked role needed by ECS for first deployments"
-}
+
 resource "aws_ecs_task_definition" "taskdef" {
   family                   = local.prefix
   requires_compatibilities = ["FARGATE"]

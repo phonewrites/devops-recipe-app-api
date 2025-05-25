@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "oidc_assume_role_policy" {
   }
 }
 
-##1. Policy to assume the Terraform Backend Access role in mgmt account
+##1 Policy to assume the Terraform Backend Access role in mgmt account
 resource "aws_iam_policy" "oidc_assume_tf_backend_access_role_policy" {
   name   = "oidc-assume-tf-backend-access-role-policy"
   policy = data.aws_iam_policy_document.assume_tf_backend_access_role_policy.json
@@ -48,7 +48,7 @@ resource "aws_iam_role_policy_attachment" "oidc_assume_tf_backend_access_role_po
   policy_arn = aws_iam_policy.oidc_assume_tf_backend_access_role_policy.arn
 }
 
-##2. Policy to assume the CICD role in prod account
+##2 Policy to assume the CICD role in prod account
 resource "aws_iam_policy" "oidc_assume_cicd_gh_actions_role_policy" {
   name   = "oidc-assume-cicd-gh-actions-role-policy"
   policy = data.aws_iam_policy_document.oidc_assume_cicd_gh_actions_role_policy.json

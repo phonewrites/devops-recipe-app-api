@@ -4,7 +4,6 @@ resource "aws_lb" "api" {
   load_balancer_type = "application"
   subnets            = [for sn in aws_subnet.public : sn.id]
   security_groups    = [aws_security_group.alb_access.id]
-  depends_on         = [aws_iam_service_linked_role.alb_service_linked_role]
 }
 resource "aws_lb_listener" "api" {
   load_balancer_arn = aws_lb.api.arn
@@ -41,10 +40,6 @@ resource "aws_lb_target_group" "api" {
   }
 }
 
-resource "aws_iam_service_linked_role" "alb_service_linked_role" {
-  aws_service_name = "elasticloadbalancing.amazonaws.com"
-  description      = "Service-linked role needed by the ALB for first deployments"
-}
 
 # Security Group to implement Access Control for the ALB
 resource "aws_security_group" "alb_access" {
