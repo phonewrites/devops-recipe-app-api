@@ -34,11 +34,10 @@ variable "ecr_proxy_image" {
 variable "django_secret_key" {
   description = "Secret key for Django"
 }
-
 variable "custom_domain" { #TESTING: Pass domain from GH Actions Variable
   description = "Your Route53 hosted zone name (e.g. example.com)"
+  default     = "phonewrites.com"
   type        = string
-  # default     = "phonewrites.com"
 }
 
 variable "subdomain" {

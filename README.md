@@ -129,7 +129,8 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 - Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
 - IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
-- `docker-compose` files are modified to work with the changes made above.
+- Custom domain is passed at runtime via the environment using GitHub-Actions a variable, instead of hardcoding it in the Terraform code.
+- `docker-compose.yml` used for deployment is modified to work with the changes made above.
 
 
 
