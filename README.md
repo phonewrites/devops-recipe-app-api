@@ -60,15 +60,13 @@ docker compose -f docker-compose-deploy.yml build
 ## Terraform Setup
 
 These resources are created & managed outside Terraform & are used to store the Terraform state.
-Create a bucket for storing Terraform state & enable versioning (recommended for production). Ensure that the public access is blocked; should be by default.
+Create a bucket for storing Terraform state & enable versioning (highly recommended for state recovery). Ensure that public access is blocked; should be by default.
 ```
-aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
+aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID] --create-bucket-configuration LocationConstraint=[REGION];
 aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
 ```
-Create a Dynamo-DB table with Partition key attribute `LockID` for state locking.
-```
-aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
-```
+
+> **Note:** Terraform 1.14+ uses S3 native locking via `.tflock` files. DynamoDB tables are no longer required for state locking.
 
 Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
