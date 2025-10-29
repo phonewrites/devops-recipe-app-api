@@ -9,11 +9,10 @@ terraform {
   backend "s3" {
     bucket       = "tf-state-nvirginia-961341515801"
     use_lockfile = true
-    # dynamodb_table = "terraform-state-locks"
-    encrypt = true
-    key     = "devops-recipe-app-api/setup-state"
-    region  = "us-east-1"
-    profile = "mgmt"
+    encrypt      = true
+    key          = "devops-recipe-app-api/setup-state"
+    region       = "us-east-1"
+    profile      = "mgmt"
   }
 }
 
