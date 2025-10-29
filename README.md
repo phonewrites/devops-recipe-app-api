@@ -33,7 +33,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 >Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api/docs` 
+2.  Browse the Django admin at [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) and login. Browse the API docs at [http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs) 
 
 ### Clearing Storage
 
@@ -49,8 +49,8 @@ docker compose -f docker-compose-deploy.yml up -d
 ```sh
 docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"
 ```
-Login at `http://127.0.0.1/admin`
-Go to `http://127.0.0.1/api/docs`
+Login at [http://127.0.0.1/admin](http://127.0.0.1/admin)
+Go to [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
 
 - After setting up Gunicorn related configs, rebuild to use new dockerfile/s
 ```
@@ -60,7 +60,7 @@ docker compose -f docker-compose-deploy.yml build
 ## Terraform Setup
 
 These resources are created & managed outside Terraform & are used to store the Terraform state.
-Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
+Create a bucket for storing Terraform state & enable versioning (recommended for production). Ensure that the public access is blocked; should be by default.
 ```
 aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
 aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
