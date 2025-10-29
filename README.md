@@ -73,6 +73,7 @@ aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --
 Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
 ```
+docker compose run --rm terraform -chdir=setup init
 docker compose run --rm terraform -chdir=setup fmt
 docker compose run --rm terraform -chdir=setup validate
 docker compose run --rm terraform -chdir=setup plan
