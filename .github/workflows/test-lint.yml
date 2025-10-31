@@ -21,7 +21,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Python test
         run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
       - name: Python flake8
@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Terraform lint
         run: |
           cd infra/

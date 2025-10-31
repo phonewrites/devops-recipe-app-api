@@ -28,7 +28,7 @@ jobs:
 
       # Preparation
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Set the terraform workspace variable
         run: |
           if [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
