@@ -39,13 +39,13 @@ jobs:
 
       # AWS authentication – chaining roles to the prod account
       - name: Assume the initial role in mgmt account using OIDC 
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
       - name: Assume the CI/CD Role in prod account
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
