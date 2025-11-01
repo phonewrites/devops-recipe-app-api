@@ -14,6 +14,7 @@ resource "aws_db_instance" "main" {
   multi_az                   = false
   backup_retention_period    = 0
   vpc_security_group_ids     = [aws_security_group.rds_access.id]
+  apply_immediately          = true #Set for demo purposes only
   tags = {
     Name = "${local.prefix}-db"
   }
