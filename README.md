@@ -98,12 +98,14 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 `TF_VAR_DJANGO_SECRET_KEY`: Secret key for the Django app (make something up).  
 
 
-
 - Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
     ```
-    docker compose run --rm terraform -chdir=setup fmt
-    docker compose run --rm terraform -chdir=setup validate
+    docker compose run --rm terraform -chdir=deploy fmt
+    docker compose run --rm terraform -chdir=deploy validate
+    docker compose run --rm terraform -chdir=deploy init -backend=false
+    docker compose run --rm terraform -chdir=deploy init -upgrade -backend=false
     ```
+>Note: You can format & validate the deploy terraform stack locally without any issues. Use the backend=false flag to update the lock file without needing AWS credentials for regular init or version upgrades.   
 - After *ECS servcie is running successfully*, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
     `http://[TASK_PUBLIC_IP]:8000/api/health-check/`  
     `http://[TASK_PUBLIC_IP]:8000/admin`  
@@ -135,7 +137,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
         --command "/bin/sh"
     python manage.py createsuperuser
     ```
-- *Setg up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
+- *Set up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
     `http://[CUSTOM_SUB_DOMAIN_NAME]/api/health-check/`  
     `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
     `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
