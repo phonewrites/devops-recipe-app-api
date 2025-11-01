@@ -3,7 +3,7 @@ resource "aws_db_instance" "main" {
   identifier                 = "${local.prefix}-db"
   db_name                    = replace(local.prefix, "-", "")
   allocated_storage          = 20
-  storage_type               = "gp2"
+  storage_type               = "gp3"
   engine                     = "postgres"
   auto_minor_version_upgrade = true
   instance_class             = "db.t4g.micro"
