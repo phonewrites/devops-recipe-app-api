@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "6.0.0-beta3"
+      version = "6.19.0"
     }
   }
   # Terraform state backend configuration in mgmt account
