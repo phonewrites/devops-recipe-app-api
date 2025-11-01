@@ -33,7 +33,7 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 >Use `--rm` flag to ensure that the temporary `app` service container does not persist in your system (in a stopped state)
 
-2.  Browse the Django admin at `http://127.0.0.1:8000/admin` and login. Browse the API docs at `http://127.0.0.1:8000/api/docs` 
+2.  Browse the Django admin at [http://127.0.0.1:8000/admin](http://127.0.0.1:8000/admin) and login. Browse the API docs at [http://127.0.0.1:8000/api/docs](http://127.0.0.1:8000/api/docs) 
 
 ### Clearing Storage
 
@@ -49,8 +49,8 @@ docker compose -f docker-compose-deploy.yml up -d
 ```sh
 docker compose -f docker-compose-deploy.yml run --rm app sh -c "python manage.py createsuperuser"
 ```
-Login at `http://127.0.0.1/admin`
-Go to `http://127.0.0.1/api/docs`
+Login at [http://127.0.0.1/admin](http://127.0.0.1/admin)
+Go to [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
 
 - After setting up Gunicorn related configs, rebuild to use new dockerfile/s
 ```
@@ -60,19 +60,18 @@ docker compose -f docker-compose-deploy.yml build
 ## Terraform Setup
 
 These resources are created & managed outside Terraform & are used to store the Terraform state.
-Create a bucket for storing Terraform state & enable versioning (Check if public access is blocked; should be by default)
+Create a bucket for storing Terraform state & enable versioning (highly recommended for state recovery). Ensure that public access is blocked; should be by default.
 ```
-aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID];
+aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID] --create-bucket-configuration LocationConstraint=[REGION];
 aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
 ```
-Create a Dynamo-DB table with Partition key attribute `LockID` for state locking.
-```
-aws --profile mgmt dynamodb create-table --table-name "terraform-state-locks" --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
-```
+
+> **Note:** Terraform 1.14+ uses S3 native locking via `.tflock` files. DynamoDB tables are no longer required for state locking.
 
 Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
 ```
+docker compose run --rm terraform -chdir=setup init
 docker compose run --rm terraform -chdir=setup fmt
 docker compose run --rm terraform -chdir=setup validate
 docker compose run --rm terraform -chdir=setup plan
@@ -99,12 +98,14 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 `TF_VAR_DJANGO_SECRET_KEY`: Secret key for the Django app (make something up).  
 
 
-
 - Run the following commands to confirm if the terraform code is valid and formatted correctly before pushing to the repo.
     ```
-    docker compose run --rm terraform -chdir=setup fmt
-    docker compose run --rm terraform -chdir=setup validate
+    docker compose run --rm terraform -chdir=deploy fmt
+    docker compose run --rm terraform -chdir=deploy validate
+    docker compose run --rm terraform -chdir=deploy init -backend=false
+    docker compose run --rm terraform -chdir=deploy init -upgrade -backend=false
     ```
+>Note: You can format & validate the deploy terraform stack locally without any issues. Use the backend=false flag to update the lock file without needing AWS credentials for regular init or version upgrades.   
 - After *ECS servcie is running successfully*, copy your ECS service task's Public IP address & access the deployed app by browsing the following URLs:
     `http://[TASK_PUBLIC_IP]:8000/api/health-check/`  
     `http://[TASK_PUBLIC_IP]:8000/admin`  
@@ -136,7 +137,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
         --command "/bin/sh"
     python manage.py createsuperuser
     ```
-- *Setg up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
+- *Set up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:
     `http://[CUSTOM_SUB_DOMAIN_NAME]/api/health-check/`  
     `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
     `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`

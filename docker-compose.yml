@@ -26,13 +26,19 @@ services:
       - db
 
   db:
-    image: postgres:13-alpine
+    image: postgres:16-alpine
     volumes:
       - dev-db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=devdb
       - POSTGRES_USER=devuser
       - POSTGRES_PASSWORD=changeme
+   #Optional healthchecks, testing
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devuser -d devdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5      
 
 volumes:
   dev-static-data:
