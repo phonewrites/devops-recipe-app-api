@@ -15,7 +15,7 @@ resource "aws_db_instance" "main" {
   backup_retention_period    = 0
   vpc_security_group_ids     = [aws_security_group.rds_access.id]
   #Apply changes immediately in staging, wait for maintenance window in prod
-  apply_immediately          = terraform.workspace == "staging" ? true : false
+  apply_immediately = terraform.workspace == "staging" ? true : false
   tags = {
     Name = "${local.prefix}-db"
   }
