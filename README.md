@@ -57,7 +57,7 @@ Go to [http://127.0.0.1/api/docs](http://127.0.0.1/api/docs)
 docker compose -f docker-compose-deploy.yml build
 ```
 
-## Terraform Setup
+## Terraform – pre-deployment setup
 
 These resources are created & managed outside Terraform & are used to store the Terraform state.
 Create a bucket for storing Terraform state & enable versioning (highly recommended for state recovery). Ensure that public access is blocked; should be by default.
@@ -79,7 +79,7 @@ docker compose run --rm terraform -chdir=setup apply
 ```
 Instead of using IAM users in AWS with access keys & secrets (long-lived creds), I use OICD passed IAM roles. The above terraform commands will create those.
 
-## Terraform deploy setup
+## Terraform – deployment setup
 
 ### GitHub Actions Variables
 **Variables:**
