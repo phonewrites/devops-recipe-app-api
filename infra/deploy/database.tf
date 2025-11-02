@@ -14,11 +14,12 @@ resource "aws_db_instance" "main" {
   multi_az                   = false
   backup_retention_period    = 0
   vpc_security_group_ids     = [aws_security_group.rds_access.id]
-  apply_immediately          = true #Set for demo purposes only
+  #Apply changes immediately in staging, wait for maintenance window in prod
+  apply_immediately          = terraform.workspace == "staging" ? true : false
   tags = {
     Name = "${local.prefix}-db"
   }
-  lifecycle { #Deletes & replaces the DB instance when SG updates
+  lifecycle { #Delete & replace the DB instance when SG updates
     replace_triggered_by = [aws_security_group.rds_access]
   }
 }
