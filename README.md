@@ -19,7 +19,7 @@ Follow the below steps to run a local development environment.
 ```sh
 docker compose up -d
 ```
->I prefer the -d flag to run it in detached mode. Optional.
+>Use -d flag to run in detached mode. Optional.
 
 3.  Browse the project at [http://127.0.0.1:8000/api/health-check/](http://127.0.0.1:8000/api/health-check/)
 
@@ -66,7 +66,7 @@ aws --profile mgmt s3api create-bucket --bucket tf-state-[REGION]-[ACCOUNT_ID] -
 aws --profile mgmt s3api put-bucket-versioning --bucket tf-state-[REGION]-[ACCOUNT_ID] --versioning-configuration Status=Enabled
 ```
 
-> **Note:** Terraform 1.14+ uses S3 native locking via `.tflock` files. DynamoDB tables are no longer required for state locking.
+> **Note:** 📢 Terraform 1.14+ supports S3 native locking via `.tflock` files. DynamoDB tables are no longer required for state locking 🎉
 
 Run the common commands via Docker Compose
 >Note: These  commands should be run from the infra/ directory of the project, and after authenticating with `aws sso login --sso-session YOUR_AWS_ORG_SESSION_NAME`
@@ -154,3 +154,17 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
 - IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
 - Custom domain is passed at runtime via the environment using GitHub-Actions a variable, instead of hardcoding it in the Terraform code.
 - `docker-compose.yml` used for deployment is modified to work with the changes made above.
+
+
+## Software Version Summary
+- Python base image: Upgraded to python:3.11-alpine3.19
+- Django: Now uses 4.2 LTS
+- PostgreSQL: Updated deployment images to 16-alpine
+- Nginx: Upgraded to 1.29.2-alpine
+- AWS Provider (Terraform): Updated to 6.19.0
+- Other key packages:
+    - djangorestframework: >=3.14.0,<3.15
+    - drf-spectacular: >=0.27.0,<0.28
+    - Pillow: >=10.0.0,<11.0
+    - gunicorn: >=21.2.0,<22.0
+    - flake8 (dev): >=7.0.0,<8.0
