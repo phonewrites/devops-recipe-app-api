@@ -6,7 +6,10 @@ on:
       - main
       - prod
     paths-ignore:
-      - 'README.md'
+      - '*.md'
+      - '*.gitignore'
+      - '*.dockerignore'
+      - 'LICENSE*'
 
 permissions:
   id-token: write #Allows GitHub to issue an OIDC token
