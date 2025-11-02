@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
 
       - name: Set Terraform workspace
         run: |
@@ -50,6 +50,7 @@ jobs:
       - name: Terraform Destroy
         env:
           AWS_DEFAULT_REGION: us-east-1
+          TF_VAR_custom_domain: ${{ vars.TF_VAR_CUSTOM_DOMAIN }}
         run: |
             cd infra/
             docker compose run --rm terraform -chdir=deploy/ init   -input=false

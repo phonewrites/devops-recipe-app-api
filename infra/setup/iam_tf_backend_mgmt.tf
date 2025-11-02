@@ -1,9 +1,9 @@
 data "aws_s3_bucket" "tf_state_bucket" {
   bucket = var.tf_state_bucket
 }
-data "aws_dynamodb_table" "tf_state_lock_table" {
-  name = var.tf_state_lock_table
-}
+# data "aws_dynamodb_table" "tf_state_lock_table" {
+#   name = var.tf_state_lock_table
+# }
 
 
 # Role in MGMT account dedicated for Terraform backend access
@@ -35,10 +35,10 @@ data "aws_iam_policy_document" "assume_tf_backend_access_role_policy" {
 }
 
 
-# Policy for Teraform backend to S3 and DynamoDB access
+# Policy for Terraform backend S3 access
 resource "aws_iam_policy" "tf_backend_access_policy" {
   name        = "${aws_iam_role.tf_backend_access_role.name}-policy"
-  description = "Allow access to S3 & DynamoDB for TF backend resources"
+  description = "Allow access to S3 for TF backend resources"
   policy      = data.aws_iam_policy_document.tf_backend_access_policy.json
 }
 data "aws_iam_policy_document" "tf_backend_access_policy" {
@@ -56,17 +56,17 @@ data "aws_iam_policy_document" "tf_backend_access_policy" {
       "${data.aws_s3_bucket.tf_state_bucket.arn}/*",
     ]
   }
-  statement {
-    sid    = "BackendStateLockDynamoAccess"
-    effect = "Allow"
-    actions = [
-      "dynamodb:DescribeTable",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:DeleteItem"
-    ]
-    resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
-  }
+  # statement {
+  #   sid    = "BackendStateLockDynamoAccess"
+  #   effect = "Allow"
+  #   actions = [
+  #     "dynamodb:DescribeTable",
+  #     "dynamodb:GetItem",
+  #     "dynamodb:PutItem",
+  #     "dynamodb:DeleteItem"
+  #   ]
+  #   resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
+  # }
 }
 resource "aws_iam_role_policy_attachment" "tf_backend_policy" {
   role       = aws_iam_role.tf_backend_access_role.name
@@ -103,28 +103,28 @@ data "aws_iam_policy_document" "tf_state_bucket_policy" {
   }
 }
 
-##2 TF state lock table resource policy for TF backend access role access
-resource "aws_dynamodb_resource_policy" "tf_state_lock_table_policy" {
-  resource_arn = data.aws_dynamodb_table.tf_state_lock_table.arn
-  policy       = data.aws_iam_policy_document.tf_state_lock_table_policy.json
-}
-data "aws_iam_policy_document" "tf_state_lock_table_policy" {
-  statement {
-    sid    = "TFBackendAccessRoleAccess"
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        aws_iam_role.tf_backend_access_role.arn,
-      ]
-    }
-    actions = [
-      "dynamodb:DescribeTable",
-      "dynamodb:GetItem",
-      "dynamodb:PutItem",
-      "dynamodb:DeleteItem"
-    ]
-    resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
+# ##2 TF state lock table resource policy for TF backend access role access
+# resource "aws_dynamodb_resource_policy" "tf_state_lock_table_policy" {
+#   resource_arn = data.aws_dynamodb_table.tf_state_lock_table.arn
+#   policy       = data.aws_iam_policy_document.tf_state_lock_table_policy.json
+# }
+# data "aws_iam_policy_document" "tf_state_lock_table_policy" {
+#   statement {
+#     sid    = "TFBackendAccessRoleAccess"
+#     effect = "Allow"
+#     principals {
+#       type = "AWS"
+#       identifiers = [
+#         aws_iam_role.tf_backend_access_role.arn,
+#       ]
+#     }
+#     actions = [
+#       "dynamodb:DescribeTable",
+#       "dynamodb:GetItem",
+#       "dynamodb:PutItem",
+#       "dynamodb:DeleteItem"
+#     ]
+#     resources = [data.aws_dynamodb_table.tf_state_lock_table.arn]
 
-  }
-}
+#   }
+# }

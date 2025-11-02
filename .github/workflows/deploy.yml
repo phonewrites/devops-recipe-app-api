@@ -5,6 +5,11 @@ on:
     branches:
       - main
       - prod
+    paths-ignore:
+      - '*.md'
+      - '*.gitignore'
+      - '*.dockerignore'
+      - 'LICENSE*'
 
 permissions:
   id-token: write #Allows GitHub to issue an OIDC token
@@ -28,7 +33,7 @@ jobs:
 
       # Preparation
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.0
       - name: Set the terraform workspace variable
         run: |
           if [[ $GITHUB_REF == 'refs/heads/prod' ]]; then
@@ -39,13 +44,13 @@ jobs:
 
       # AWS authentication – chaining roles to the prod account
       - name: Assume the initial role in mgmt account using OIDC 
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
       - name: Assume the CI/CD Role in prod account
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v5.1.0
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
@@ -57,7 +62,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2.0.1       
       - name: Build and push the API app image
-        uses: docker/build-push-action@v6.16.0
+        uses: docker/build-push-action@v6.18.0
         with:
           context: .
           push: true
@@ -65,7 +70,7 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ vars.ECR_APP_REPOSITORY_NAME }}:latest
       - name: Build and push the API proxy image
-        uses: docker/build-push-action@v6.16.0
+        uses: docker/build-push-action@v6.18.0
         with:
           context: ./proxy
           push: true

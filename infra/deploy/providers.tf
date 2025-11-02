@@ -2,13 +2,13 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "6.0.0-beta1"
+      version = "6.19.0"
     }
   }
   # Terraform state backend configuration in mgmt account
   backend "s3" {
     bucket               = "tf-state-nvirginia-961341515801"
-    dynamodb_table       = "terraform-state-locks"
+    use_lockfile         = true
     encrypt              = true
     key                  = "devops-recipe-app-api/deploy-state"
     workspace_key_prefix = "devops-recipe-app-api/workspace"

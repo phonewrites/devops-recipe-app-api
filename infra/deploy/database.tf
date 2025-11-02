@@ -3,7 +3,7 @@ resource "aws_db_instance" "main" {
   identifier                 = "${local.prefix}-db"
   db_name                    = replace(local.prefix, "-", "")
   allocated_storage          = 20
-  storage_type               = "gp2"
+  storage_type               = "gp3"
   engine                     = "postgres"
   auto_minor_version_upgrade = true
   instance_class             = "db.t4g.micro"
@@ -14,10 +14,12 @@ resource "aws_db_instance" "main" {
   multi_az                   = false
   backup_retention_period    = 0
   vpc_security_group_ids     = [aws_security_group.rds_access.id]
+  #Apply changes immediately in staging, wait for maintenance window in prod
+  apply_immediately = terraform.workspace == "staging" ? true : false
   tags = {
     Name = "${local.prefix}-db"
   }
-  lifecycle { #Deletes & replaces the DB instance when SG updates
+  lifecycle { #Delete & replace the DB instance when SG updates
     replace_triggered_by = [aws_security_group.rds_access]
   }
 }
