@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - prod
+    paths-ignore:
+      - 'README.md'
 
 permissions:
   id-token: write #Allows GitHub to issue an OIDC token
