@@ -10,8 +10,8 @@ terraform {
     bucket               = "tf-state-nvirginia-961341515801"
     use_lockfile         = true
     encrypt              = true
-    key                  = "devops-recipe-app-api/deploy-state"
-    workspace_key_prefix = "devops-recipe-app-api/workspace"
+    key                  = "devops-recipe-app-api/deploy/default/terraform.tfstate"
+    workspace_key_prefix = "devops-recipe-app-api/deploy"
     region               = "us-east-1"
     assume_role = {
       role_arn = "arn:aws:iam::961341515801:role/tf-backend-access-role"
