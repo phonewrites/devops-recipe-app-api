@@ -1,10 +1,6 @@
 data "aws_s3_bucket" "tf_state_bucket" {
   bucket = var.tf_state_bucket
 }
-# data "aws_dynamodb_table" "tf_state_lock_table" {
-#   name = var.tf_state_lock_table
-# }
-
 
 # Role in MGMT account dedicated for Terraform backend access
 resource "aws_iam_role" "tf_backend_access_role" {
