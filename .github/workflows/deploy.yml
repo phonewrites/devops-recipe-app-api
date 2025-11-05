@@ -13,8 +13,8 @@ on:
 
 permissions:
   id-token: write #Allows GitHub to issue an OIDC token
-  contents: read #Allows GitHub to checkout code
-                 #default permission when no permissions block is present
+  contents: read  #Allows GitHub to checkout code
+                  #default permission when no permissions block is present
 
 jobs:
 
@@ -27,7 +27,7 @@ jobs:
 
   deploy:
     name: Deploy
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     needs: [test-lint]
     steps:
 

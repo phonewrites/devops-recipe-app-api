@@ -112,7 +112,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
     `http://[TASK_PUBLIC_IP]:8000/api/docs`  
 
 - Ensure that AWS SessionManager plugin is installed on your local machine. This is required to run `aws ecs execute-command`:
-    ```
+    ```sh
     aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
         --task [TASK_ID]\
         --container api \
@@ -120,7 +120,7 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
         --command "/bin/sh"
     ```
 - Once inside the task's API container, run the following command to create a superuser:
-    ```
+    ```sh
     python manage.py createsuperuser
     ```
     Test by logging into the Django admin at `http://[TASK_PUBLIC_IP]:8000/admin` with the superuser credentials you just created.
@@ -129,12 +129,14 @@ Instead of using IAM users in AWS with access keys & secrets (long-lived creds),
     `http://[ALB_DNS_NAME]/admin`  
     `http://[ALB_DNS_NAME]/api/docs`
 - After *setting up EFS* for persistent storage, test again using above URLs in the browser. If the entire deployment was deleted and recreated, the database will be empty. You can create a superuser again using the command:
-    ```
+    ```sh
     aws --profile prod ecs execute-command --region us-east-1 --cluster [CLUSTER_NAME] \
         --task [TASK_ID]\
         --container api \
         --interactive \
         --command "/bin/sh"
+    ``` 
+    ```sh
     python manage.py createsuperuser
     ```
 - *Set up a custom sub domain & https certificate.* Then, test again using above URLs in the browser:

@@ -10,7 +10,7 @@ terraform {
     bucket       = "tf-state-nvirginia-961341515801"
     use_lockfile = true
     encrypt      = true
-    key          = "devops-recipe-app-api/setup-state"
+    key          = "devops-recipe-app-api/setup/terraform.tfstate"
     region       = "us-east-1"
     profile      = "mgmt"
   }
