@@ -9,6 +9,7 @@ resource "aws_ecs_service" "service" {
   desired_count          = 1
   launch_type            = "FARGATE"
   platform_version       = "1.4.0"
+  wait_for_steady_state  = true
   enable_execute_command = true
   network_configuration {
     ##For testing service reachability wthout ALB
