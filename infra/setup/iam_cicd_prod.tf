@@ -180,6 +180,7 @@ data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
       "ecs:CreateCluster",
       "ecs:UpdateCluster",
       "ecs:TagResource",
+      "ecs:ListServiceDeployments",
     ]
     resources = ["*"]
   }
