@@ -180,7 +180,9 @@ data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
       "ecs:CreateCluster",
       "ecs:UpdateCluster",
       "ecs:TagResource",
+      #Fix failing gh actions due to wait_for_steady_state = true
       "ecs:ListServiceDeployments",
+      "ecs:DescribeServiceDeployments",
     ]
     resources = ["*"]
   }
