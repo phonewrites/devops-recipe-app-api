@@ -1,4 +1,4 @@
-FROM nginxinc/nginx-unprivileged:1.29.2-alpine
+FROM nginxinc/nginx-unprivileged:1.29.5-alpine3.23
 
 COPY ./default.conf.tpl /etc/nginx/default.conf.tpl
 COPY ./gunicorn_headers /etc/nginx/gunicorn_headers

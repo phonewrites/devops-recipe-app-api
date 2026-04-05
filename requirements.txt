@@ -1,6 +1,6 @@
-Django>=4.2.0,<4.3
-djangorestframework>=3.14.0,<3.15
-psycopg2>=2.9.9,<3.0
-drf-spectacular>=0.27.0,<0.28
-Pillow>=10.0.0,<11.0
-gunicorn>=21.2.0,<22.0
+Django>=5.2,<5.3
+djangorestframework>=3.17,<3.18
+psycopg2>=2.9.11,<3.0
+drf-spectacular>=0.29,<0.30
+Pillow>=12.2,<13
+gunicorn>=25.3,<26

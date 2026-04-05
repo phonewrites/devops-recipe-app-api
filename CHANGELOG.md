@@ -2,6 +2,15 @@
 
 All notable changes are documented here following [Keep a Changelog](https://keepachangelog.com/) conventions.
 
+## [2026-04-05]
+### Changed
+- Python base image: `3.11-alpine3.19` → `3.13-alpine3.23`
+- Django: `4.2 LTS` → `5.2.x` **LTS** (security/feature updates with extended support through April 2028)
+- djangorestframework, drf-spectacular, Pillow, gunicorn, psycopg2, flake8 bumped to current stable compatible ranges (see `requirements.txt`)
+- PostgreSQL (compose): `16-alpine` → `17-alpine`
+- Nginx unprivileged proxy: `1.29.2-alpine` → `1.29.5-alpine3.23`
+- `docker-compose-deploy.yml`: explicit **`deploy`** bridge network for `app`, `db`, and `proxy` so `docker compose run` one-off containers resolve the hostname **`db`** reliably
+
 ## [2025-11-02]
 ### Changed
 - Upgrade Python base image in Dockerfile from `3.9-alpine3.13` to `3.11-alpine3.19`🎉

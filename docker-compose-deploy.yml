@@ -15,9 +15,11 @@ services:
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     depends_on:
       - db
+    networks:
+      - deploy
 
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
     restart: always
     volumes:
       - postgres-data:/var/lib/postgresql/data
@@ -25,6 +27,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+    networks:
+      - deploy
 
   proxy:
     build:
@@ -38,6 +42,13 @@ services:
     volumes:
       - static-data:/vol/static
       - media-data:/vol/media
+    networks:
+      - deploy
+
+networks:
+  deploy:
+    driver: bridge
+
 volumes:
   static-data:
   media-data:
