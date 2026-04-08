@@ -97,9 +97,9 @@ docker compose up -d
 
 ## Next: AWS & Terraform
 
-1. [`infra/README.md`](infra/README.md) — hub: run Compose from `infra/`, order is `setup/` then `deploy/`.
-2. Terraform pre-deployment setup: [`infra/setup/README.md`](infra/setup/README.md) (`terraform … -chdir=setup`).
-3. Terraform deployment setup: [`infra/deploy/README.md`](infra/deploy/README.md) (`terraform … -chdir=deploy`).
+1. [`infra/README.md`](infra/README.md) — hub: run docker compose from `infra/`, order is `setup/` then `deploy/`.
+2. Terraform pre-deployment setup: `terraform -chdir=setup`.
+3. Terraform deployment setup: `terraform -chdir=deploy`.
 
 ---
 
@@ -122,7 +122,7 @@ docker compose up -d
 - Django: `5.2.x` LTS (longer support window; Python 3.10+)
 - PostgreSQL: `17-alpine` (local compose)
 - Nginx (proxy): `nginxinc/nginx-unprivileged:1.29.5-alpine3.23`
-- AWS Provider (Terraform): 6.19.0
+- Terraform: 1.14.8; AWS provider `~> 6.39.0`
 - Other key packages:
     - djangorestframework: >=3.17,<3.18
     - drf-spectacular: >=0.29,<0.30

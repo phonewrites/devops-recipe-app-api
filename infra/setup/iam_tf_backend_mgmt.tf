@@ -2,7 +2,7 @@ data "aws_s3_bucket" "tf_state_bucket" {
   bucket = var.tf_state_bucket
 }
 
-# Role in MGMT account dedicated for Terraform backend access
+# Role in mgmt account dedicated for Terraform backend access
 resource "aws_iam_role" "tf_backend_access_role" {
   name               = "tf-backend-access-role"
   description        = "Role assumed by Terraform for backend operations in the mgmt account."
