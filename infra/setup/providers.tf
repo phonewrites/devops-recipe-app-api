@@ -1,13 +1,15 @@
 terraform {
+  required_version = ">= 1.14.8, < 2.0.0"
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "6.19.0"
+      version = "~> 6.39.0"
     }
   }
   # Terraform state backend configuration in mgmt account
   backend "s3" {
-    bucket       = "tf-state-nvirginia-961341515801"
+    bucket       = "terraform-state-993249607057-us-east-1"
     use_lockfile = true
     encrypt      = true
     key          = "devops-recipe-app-api/setup/terraform.tfstate"
