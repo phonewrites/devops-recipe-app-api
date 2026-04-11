@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6
 
       - name: Set Terraform workspace
         run: |
@@ -31,14 +31,14 @@ jobs:
 
       # AWS authentication – chaining roles to the prod account
       - name: Assume the initial role in mgmt account using OIDC 
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
           mask-aws-account-id: true
       - name: Assume the CI/CD Role in prod account
-        uses: aws-actions/configure-aws-credentials@v4.2.1
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}

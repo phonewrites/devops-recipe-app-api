@@ -2,7 +2,7 @@
 
 All notable changes are documented here following [Keep a Changelog](https://keepachangelog.com/) conventions.
 
-## [2026-04-08]
+## [2026-04-11]
 ### Changed
 - Python base image: `3.11-alpine3.19` → `3.13-alpine3.23`
 - Django: `4.2 LTS` → `5.2.x` **LTS** (security/feature updates with extended support through April 2028)
@@ -13,6 +13,7 @@ All notable changes are documented here following [Keep a Changelog](https://kee
 - Terraform (Docker image): `1.14.0-rc1` → `1.14.8`
 - Terraform `required_version` in `infra/setup` and `infra/deploy`: `>= 1.14.8, < 2.0.0`
 - Terraform AWS provider: `6.19.0` → `~> 6.39.0`
+- GitHub Actions (checkout, build-push, login, credentials) upgraded to latest versions for improved pipeline security and reliability
 
 ## [2025-11-02]
 ### Changed
@@ -26,7 +27,7 @@ All notable changes are documented here following [Keep a Changelog](https://kee
 - PostgreSQL upgraded from `13-alpine` → `16-alpine`
 - Nginx upgraded from `1-alpine` → `1.29.2-alpine`
 - Upgraded Terraform AWS provider to `6.19.0` 🚧😎
-- Docker GitHub Actions (checkout, build-push, login, credentials) upgraded to latest versions for improved pipeline security and reliability
+- GitHub Actions (checkout, build-push, login, credentials) upgraded to latest versions for improved pipeline security and reliability
 
 ### Deprecated
 - **Removed all resources & references to DynamoDB state lock (backend state):** Now uses S3 lockfile (`use_lockfile = true`) for Terraform locking 🚧([see commit](https://github.com/phonewrites/devops-recipe-app-api/commit/463a1909c718f820428c49f1f2e9218624cbdb3b))
