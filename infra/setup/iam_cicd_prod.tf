@@ -498,6 +498,8 @@ resource "aws_iam_policy" "cicd_gha_ssm_params_policy" {
   policy      = data.aws_iam_policy_document.cicd_gha_ssm_params_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_ssm_params_policy" {
+  # DescribeParameters is evaluated against arn:aws:ssm:region:account:* and cannot be
+  # scoped to parameter path ARNs (unlike PutParameter / GetParameter).
   statement {
     sid    = "ManageParameters"
     effect = "Allow"
@@ -506,7 +508,6 @@ data "aws_iam_policy_document" "cicd_gha_ssm_params_policy" {
       "ssm:DeleteParameter",
       "ssm:GetParameter",
       "ssm:GetParameters",
-      "ssm:DescribeParameters",
       "ssm:AddTagsToResource",
       "ssm:RemoveTagsFromResource",
       "ssm:ListTagsForResource",
@@ -527,6 +528,18 @@ data "aws_iam_policy_document" "cicd_gha_ssm_params_policy" {
     resources = [
       aws_kms_key.kms_secrets.arn,
     ]
+  }
+  statement {
+    sid       = "ListKMSAliases"
+    effect    = "Allow"
+    actions   = ["kms:ListAliases"]
+    resources = ["*"]
+  }
+  statement {
+    sid       = "DescribeParameters"
+    effect    = "Allow"
+    actions   = ["ssm:DescribeParameters"]
+    resources = ["*"]
   }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_ssm_params_policy" {
