@@ -44,10 +44,6 @@ resource "aws_ecs_task_definition" "taskdef" {
         user              = "django-user"
         environment = [
           {
-            name  = "DJANGO_SECRET_KEY"
-            value = var.django_secret_key
-          },
-          {
             name  = "DB_HOST"
             value = aws_db_instance.main.address
           },
@@ -60,12 +56,18 @@ resource "aws_ecs_task_definition" "taskdef" {
             value = aws_db_instance.main.username
           },
           {
-            name  = "DB_PASS"
-            value = aws_db_instance.main.password
-          },
-          {
             name  = "ALLOWED_HOSTS"
             value = aws_route53_record.app_cname_record.fqdn
+          }
+        ]
+        secrets = [
+          {
+            name      = "DJANGO_SECRET_KEY"
+            valueFrom = aws_ssm_parameter.django_secret_key.arn
+          },
+          {
+            name      = "DB_PASS"
+            valueFrom = aws_ssm_parameter.db_password.arn
           }
         ]
         mountPoints = [
@@ -252,6 +254,25 @@ data "aws_iam_policy_document" "task_execution_role_policy" {
       "logs:PutLogEvents"
     ]
     resources = ["*"]
+  }
+  statement {
+    sid    = "GetParamsForECS"
+    effect = "Allow"
+    actions = [
+      "ssm:GetParameters",
+    ]
+    resources = [
+      aws_ssm_parameter.django_secret_key.arn,
+      aws_ssm_parameter.db_password.arn,
+    ]
+  }
+  statement {
+    sid    = "DecryptSecureStringParams"
+    effect = "Allow"
+    actions = [
+      "kms:Decrypt",
+    ]
+    resources = [data.aws_kms_alias.alias_secrets.target_key_arn]
   }
 }
 resource "aws_iam_role_policy_attachment" "task_execution_role_policy" {
