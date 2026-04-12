@@ -2,6 +2,12 @@
 
 All notable changes are documented here following [Keep a Changelog](https://keepachangelog.com/) conventions.
 
+## [2026-04-12]
+### Changed
+- ECS: Django `SECRET_KEY` + DB password from SSM `SecureString` via `secrets`; CMK in `infra/setup` (`alias/<project>/secrets`); execution role + CI IAM for SSM/KMS
+- GitHub Actions (deploy): `mask-aws-account-id` on both `configure-aws-credentials` steps
+- CI `cicd_gha_*` IAM: extra SSM policy; tighter `recipe-api-*` ARNs where resource-level permissions exist
+
 ## [2026-04-11]
 ### Changed
 - Python base image: `3.11-alpine3.19` → `3.13-alpine3.23`
