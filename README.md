@@ -112,8 +112,10 @@ docker compose up -d
 - Deprecated resources are replaced with the latest ones, following the terraform recommeded best practices.
 - Terraform code is DRY wherever possible, adding to the extendability from the point above.
 - IAM permissions are updated to fix deployment workflow errors, espcially regarding the Service Linked Roles.
-- Custom domain is passed at runtime via the environment using GitHub-Actions a variable, instead of hardcoding it in the Terraform code.
+- Custom domain is passed at runtime via the environment using a GitHub Actions variable, instead of hardcoding it in the Terraform code.
 - `docker-compose.yml` used for deployment is modified to work with the changes made above.
+- On AWS ECS, material that must not appear as cleartext in the console is supplied via SSM `SecureString` parameters and ECS `secrets` instead of plain `environment` entries.
+
 
 ---
 

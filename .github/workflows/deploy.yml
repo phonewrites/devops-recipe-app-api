@@ -49,13 +49,15 @@ jobs:
           role-to-assume: ${{ vars.OIDC_GH_ACTIONS_ROLE_MGMT }}
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
+          mask-aws-account-id: true
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.CICD_GH_ACTIONS_ROLE_PROD }}
           role-session-name: gh-actions-prod-${{ github.actor }}
           aws-region: us-east-1
-          role-chaining: true     
+          role-chaining: true
+          mask-aws-account-id: true
 
       # Build, tag and push Docker images to AWS ECR          
       - name: Login to ECR using the assumed role credentials 

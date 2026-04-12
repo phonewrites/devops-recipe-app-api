@@ -1,3 +1,39 @@
+data "aws_region" "prod" {
+  provider = aws.prod
+}
+data "aws_caller_identity" "prod" {
+  provider = aws.prod
+}
+
+locals {
+  cicd_prod_region     = data.aws_region.prod.id
+  cicd_prod_account_id = data.aws_caller_identity.prod.account_id
+  # Deploy workspaces this repo uses (log group name = "<workspace>/<project>")
+  cicd_prod_cw_log_arns = [
+    "arn:aws:logs:${local.cicd_prod_region}:${local.cicd_prod_account_id}:log-group:staging/${var.project}",
+    "arn:aws:logs:${local.cicd_prod_region}:${local.cicd_prod_account_id}:log-group:staging/${var.project}:log-stream:*",
+    "arn:aws:logs:${local.cicd_prod_region}:${local.cicd_prod_account_id}:log-group:prod/${var.project}",
+    "arn:aws:logs:${local.cicd_prod_region}:${local.cicd_prod_account_id}:log-group:prod/${var.project}:log-stream:*",
+  ]
+  # CreateDBInstance also needs default og/pg ARNs in addition to db + subgrp for this app.
+  cicd_prod_rds_arns = [
+    "arn:aws:rds:${local.cicd_prod_region}:${local.cicd_prod_account_id}:db:recipe-api-*",
+    "arn:aws:rds:${local.cicd_prod_region}:${local.cicd_prod_account_id}:subgrp:recipe-api-*",
+    "arn:aws:rds:${local.cicd_prod_region}:${local.cicd_prod_account_id}:og:*",
+    "arn:aws:rds:${local.cicd_prod_region}:${local.cicd_prod_account_id}:pg:*",
+  ]
+  cicd_prod_elb_arns = [
+    "arn:aws:elasticloadbalancing:${local.cicd_prod_region}:${local.cicd_prod_account_id}:loadbalancer/app/recipe-api-*/*",
+    "arn:aws:elasticloadbalancing:${local.cicd_prod_region}:${local.cicd_prod_account_id}:targetgroup/recipe-api-*/*",
+    "arn:aws:elasticloadbalancing:${local.cicd_prod_region}:${local.cicd_prod_account_id}:listener/app/recipe-api-*/*/*",
+    "arn:aws:elasticloadbalancing:${local.cicd_prod_region}:${local.cicd_prod_account_id}:listener-rule/app/recipe-api-*/*/*/*",
+  ]
+  cicd_prod_iam_app_arns = [
+    "arn:aws:iam::${local.cicd_prod_account_id}:role/recipe-api-*",
+    "arn:aws:iam::${local.cicd_prod_account_id}:policy/recipe-api-*",
+  ]
+}
+
 # Main role in prod account for deployments
 resource "aws_iam_role" "cicd_gh_actions_role" {
   provider           = aws.prod
@@ -29,7 +65,7 @@ resource "aws_iam_role_policy_attachment" "cicd_assume_tf_backend_access_role_po
   policy_arn = aws_iam_policy.cicd_assume_tf_backend_access_role_policy.arn
 }
 
-##2-10 IAM policies for deployments by GitHub Actions
+##2-11 IAM policies for deployments by GitHub Actions
 resource "aws_iam_policy" "cicd_gha_ecr_policy" {
   provider    = aws.prod
   name        = "cicd-gha-ecr-policy"
@@ -135,20 +171,27 @@ resource "aws_iam_policy" "cicd_gha_rds_policy" {
 }
 data "aws_iam_policy_document" "cicd_gha_rds_policy" {
   statement {
-    sid    = "ManageRDS"
+    sid    = "DescribeRDS"
     effect = "Allow"
     actions = [
       "rds:DescribeDBSubnetGroups",
       "rds:DescribeDBInstances",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ScopedMutateRDS"
+    effect = "Allow"
+    actions = [
       "rds:CreateDBSubnetGroup",
       "rds:DeleteDBSubnetGroup",
       "rds:CreateDBInstance",
       "rds:DeleteDBInstance",
       "rds:ListTagsForResource",
       "rds:ModifyDBInstance",
-      "rds:AddTagsToResource"
+      "rds:AddTagsToResource",
     ]
-    resources = ["*"]
+    resources = local.cicd_prod_rds_arns
   }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_rds_policy" {
@@ -163,6 +206,7 @@ resource "aws_iam_policy" "cicd_gha_ecs_policy" {
   description = "Allow managing ECS resources in prod account for deployments"
   policy      = data.aws_iam_policy_document.cicd_gha_ecs_policy.json
 }
+
 data "aws_iam_policy_document" "cicd_gha_ecs_policy" {
   statement {
     sid    = "ManageECS"
@@ -201,32 +245,46 @@ resource "aws_iam_policy" "cicd_gha_alb_policy" {
 }
 data "aws_iam_policy_document" "cicd_gha_alb_policy" {
   statement {
-    sid    = "ManageALB"
+    sid    = "DescribeALB"
     effect = "Allow"
     actions = [
-      "elasticloadbalancing:DeleteLoadBalancer",
-      "elasticloadbalancing:DeleteTargetGroup",
-      "elasticloadbalancing:DeleteListener",
       "elasticloadbalancing:DescribeListeners",
       "elasticloadbalancing:DescribeLoadBalancerAttributes",
       "elasticloadbalancing:DescribeTargetGroups",
       "elasticloadbalancing:DescribeTargetGroupAttributes",
       "elasticloadbalancing:DescribeLoadBalancers",
-      "elasticloadbalancing:CreateListener",
-      "elasticloadbalancing:SetSecurityGroups",
-      "elasticloadbalancing:ModifyLoadBalancerAttributes",
-      "elasticloadbalancing:CreateLoadBalancer",
-      "elasticloadbalancing:ModifyTargetGroupAttributes",
-      "elasticloadbalancing:CreateTargetGroup",
-      "elasticloadbalancing:AddTags",
       "elasticloadbalancing:DescribeTags",
-      "elasticloadbalancing:ModifyListener",
-      "elasticloadbalancing:ModifyListenerAttributes",
       "elasticloadbalancing:DescribeListenerAttributes",
       "ec2:DescribeAccountAttributes",
       "ec2:GetSecurityGroupsForVpc",
     ]
     resources = ["*"]
+  }
+  statement {
+    sid    = "CreateALB"
+    effect = "Allow"
+    actions = [
+      "elasticloadbalancing:CreateLoadBalancer",
+      "elasticloadbalancing:CreateTargetGroup",
+      "elasticloadbalancing:CreateListener",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ScopedManageALB"
+    effect = "Allow"
+    actions = [
+      "elasticloadbalancing:DeleteLoadBalancer",
+      "elasticloadbalancing:DeleteTargetGroup",
+      "elasticloadbalancing:DeleteListener",
+      "elasticloadbalancing:SetSecurityGroups",
+      "elasticloadbalancing:ModifyLoadBalancerAttributes",
+      "elasticloadbalancing:ModifyTargetGroupAttributes",
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:ModifyListener",
+      "elasticloadbalancing:ModifyListenerAttributes",
+    ]
+    resources = local.cicd_prod_elb_arns
   }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_alb_policy" {
@@ -243,17 +301,24 @@ resource "aws_iam_policy" "cicd_gha_cw_policy" {
 }
 data "aws_iam_policy_document" "cicd_gha_cw_policy" {
   statement {
-    sid    = "ManageCWLogs"
+    sid    = "DescribeCWLogs"
+    effect = "Allow"
+    actions = [
+      "logs:DescribeLogGroups",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ScopedManageCWLogs"
     effect = "Allow"
     actions = [
       "logs:DeleteLogGroup",
-      "logs:DescribeLogGroups",
       "logs:CreateLogGroup",
       "logs:TagResource",
       "logs:ListTagsLogGroup",
       "logs:ListTagsForResource",
     ]
-    resources = ["*"]
+    resources = local.cicd_prod_cw_log_arns
   }
 }
 resource "aws_iam_role_policy_attachment" "cicd_gha_cw_policy" {
@@ -329,8 +394,18 @@ resource "aws_iam_policy" "cicd_gha_iam_policy" {
   policy      = data.aws_iam_policy_document.cicd_gha_iam_policy.json
 }
 data "aws_iam_policy_document" "cicd_gha_iam_policy" {
+  # CreateRole / CreatePolicy do not support resource-level permissions on the new name.
   statement {
-    sid    = "ManageBasicIAM"
+    sid    = "CreateIAMRoleAndPolicy"
+    effect = "Allow"
+    actions = [
+      "iam:CreateRole",
+      "iam:CreatePolicy",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    sid    = "ScopedManageIAM"
     effect = "Allow"
     actions = [
       "iam:ListInstanceProfilesForRole",
@@ -343,16 +418,12 @@ data "aws_iam_policy_document" "cicd_gha_iam_policy" {
       "iam:GetRole",
       "iam:GetPolicyVersion",
       "iam:GetPolicy",
-      "iam:CreateRole",
-      "iam:CreatePolicy",
       "iam:AttachRolePolicy",
       "iam:TagRole",
       "iam:TagPolicy",
       "iam:PassRole",
-      # Create Service-linked roles permissions for all possible roles
-      # "iam:CreateServiceLinkedRole",
     ]
-    resources = ["*"]
+    resources = local.cicd_prod_iam_app_arns
   }
   statement {
     #Create service-linked roles selectively for first deployments
@@ -418,4 +489,48 @@ resource "aws_iam_role_policy_attachment" "cicd_gha_dns_policy" {
   provider   = aws.prod
   role       = aws_iam_role.cicd_gh_actions_role.name
   policy_arn = aws_iam_policy.cicd_gha_dns_policy.arn
+}
+
+resource "aws_iam_policy" "cicd_gha_ssm_params_policy" {
+  provider    = aws.prod
+  name        = "cicd-gha-ssm-params-policy"
+  description = "Allow Terraform in CI to manage SecureString SSM parameters used by ECS"
+  policy      = data.aws_iam_policy_document.cicd_gha_ssm_params_policy.json
+}
+data "aws_iam_policy_document" "cicd_gha_ssm_params_policy" {
+  statement {
+    sid    = "ManageParameters"
+    effect = "Allow"
+    actions = [
+      "ssm:PutParameter",
+      "ssm:DeleteParameter",
+      "ssm:GetParameter",
+      "ssm:GetParameters",
+      "ssm:DescribeParameters",
+      "ssm:AddTagsToResource",
+      "ssm:RemoveTagsFromResource",
+      "ssm:ListTagsForResource",
+    ]
+    resources = [
+      "arn:aws:ssm:${local.cicd_prod_region}:${local.cicd_prod_account_id}:parameter/recipe-api-*"
+    ]
+  }
+  statement {
+    sid    = "UseCMK"
+    effect = "Allow"
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+      "kms:DescribeKey",
+    ]
+    resources = [
+      aws_kms_key.kms_secrets.arn,
+    ]
+  }
+}
+resource "aws_iam_role_policy_attachment" "cicd_gha_ssm_params_policy" {
+  provider   = aws.prod
+  role       = aws_iam_role.cicd_gh_actions_role.name
+  policy_arn = aws_iam_policy.cicd_gha_ssm_params_policy.arn
 }
