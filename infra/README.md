@@ -61,11 +61,14 @@ You can format and validate without AWS credentials. Use `-backend=false` when y
 
 ### GitHub Actions
 
-Workflow definitions: [`.github/workflows/`](../.github/workflows/). Example branch ruleset JSON (not applied automatically by GitHub): [`.github/rulesets/protect-delete-and-need-pr-to-merge.json`](../.github/rulesets/protect-delete-and-need-pr-to-merge.json). Create or adjust rules in the repository Settings → Rules UI (or API); after a PR has run once, add the `Checks passed` check under “Require status checks to pass”.
+Workflow definitions: [`.github/workflows/`](../.github/workflows/)
+
+Ruleset import template: [`.github/rulesets/protect-delete-and-need-pr-to-merge.json`](../.github/rulesets/protect-delete-and-need-pr-to-merge.json)
+`Settings` → `Rules` → `New Ruleset` → `Import a ruleset`; re-add or adjust `bypass_actors` value (`Bypass list` in the UI) if actor IDs differ; drop the CodeQL rule if code scanning is not enabled.
 
 1. Add the variables and secrets below. Role ARNs come from Part 1: `oidc-gh-actions-role` in the management account, `cicd-gh-actions-role` in the workload account. `TF_VAR_CUSTOM_DOMAIN` is the apex of the public DNS zone used in prod.
 
-2. Configure rulesets for the default branch and `prod` to match your policy (see the example JSON). Require status checks once `Checks passed` is available.
+2. Import or mirror the example ruleset JSON for the default branch and `prod` (template already lists `Checks passed`; if that context is missing after import, add it under required status checks).
 
 3. Open a pull request into `main` (Terraform workspace staging) or `prod` (workspace prod). Merging triggers Deploy: build/push images to ECR and run `terraform apply` in `deploy/`. Pushes that only change workflow `paths-ignore` patterns (for example `*.md`) do not start Deploy.
 
