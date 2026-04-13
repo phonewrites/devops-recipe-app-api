@@ -45,7 +45,7 @@ OIDC-based IAM roles are created as in [`setup/iam_oidc_mgmt.tf`](setup/iam_oidc
 
 Application infrastructure: networking, ECS, RDS, load balancing, DNS, and related resources for the running API.
 
-Order: local format/validate → GitHub variables, rulesets, and PR merge → Test the app with the URLs in the sections below (ECS, then ALB, then custom domain) → optional teardown last.
+Order: local format/validate → GitHub variables, rulesets, and PR merge → Test the app with the URLs in the sections below (ECS, then ALB, then custom domain) → full teardown: [Teardown (when done)](#teardown-when-done).
 
 ### Local format / validate (no backend)
 
@@ -131,6 +131,17 @@ After DNS and certificate setup, test:
 `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
 `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
 
-### Teardown (optional)
 
-When you are finished testing (ALB URLs, custom domain URLs, or earlier ECS URLs), run the Destroy workflow from the Actions tab and choose the staging/prod workspace.
+
+## Teardown (when done)
+
+Not for real production environments. Follow these steps to save bills.
+
+1. In GitHub, run the **Destroy** workflow ([`destroy.yml`](../.github/workflows/destroy.yml)) from the Actions tab. Run it once per workspace you created (e.g. **staging** and **prod** if both exist). This runs `terraform destroy` in `deploy/` with OIDC credentials.
+
+2. Run from the `infra/` directory, with AWS auth that can manage both accounts used in Part 1 (same as `setup` apply):
+```sh
+docker compose run --rm terraform -chdir=setup destroy
+```
+
+3. Empty & delete the [Remote state versioned bucket](#remote-state-bucket-outside-terraform) that was created manually (outside Terraform).
