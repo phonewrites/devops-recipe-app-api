@@ -2,13 +2,19 @@
 
 All notable changes are documented here following [Keep a Changelog](https://keepachangelog.com/) conventions.
 
-## [2026-04-12]
+## [2026-04-13]
+
+### Added
+- `.github/rulesets/protect-delete-and-need-pr-to-merge.json` — ruleset import template
 ### Changed
-- ECS: Django `SECRET_KEY` + DB password from SSM `SecureString` via `secrets`; CMK in `infra/setup` (`alias/<project>/secrets`); execution role + CI IAM for SSM/KMS
-- GitHub Actions (deploy): `mask-aws-account-id` on both `configure-aws-credentials` steps
-- CI `cicd_gha_*` IAM: extra SSM policy; tighter `recipe-api-*` ARNs where resource-level permissions exist
+- ECS: Django + DB secrets from SSM `SecureString`; CMK in `infra/setup`; task execution + CI IAM for SSM/KMS
+- Deploy/Destroy: `mask-aws-account-id` on OIDC credential steps; `cicd_gha_*` SSM/KMS policy and `recipe-api-*` ARN scoping
+- Checks PRs to `main` and `prod`; `Checks passed` on `ubuntu-slim`; Deploy omits duplicate `test-lint`
+- `infra/README.md`, root `README.md`, workflow YAML headers (Part 2 flow, Actions, rulesets, teardown)
+
 
 ## [2026-04-11]
+
 ### Changed
 - Python base image: `3.11-alpine3.19` → `3.13-alpine3.23`
 - Django: `4.2 LTS` → `5.2.x` **LTS** (security/feature updates with extended support through April 2028)
@@ -21,7 +27,9 @@ All notable changes are documented here following [Keep a Changelog](https://kee
 - Terraform AWS provider: `6.19.0` → `~> 6.39.0`
 - GitHub Actions (checkout, build-push, login, credentials) upgraded to latest versions for improved pipeline security and reliability
 
+
 ## [2025-11-02]
+
 ### Changed
 - Upgrade Python base image in Dockerfile from `3.9-alpine3.13` → `3.11-alpine3.19`🎉
 - Django upgraded to `4.2 LTS`
@@ -34,10 +42,8 @@ All notable changes are documented here following [Keep a Changelog](https://kee
 - Nginx upgraded from `1-alpine` → `1.29.2-alpine`
 - Upgraded Terraform AWS provider to `6.19.0` 🚧😎
 - GitHub Actions (checkout, build-push, login, credentials) upgraded to latest versions for improved pipeline security and reliability
-
 ### Deprecated
 - **Removed all resources & references to DynamoDB state lock (backend state):** Now uses S3 lockfile (`use_lockfile = true`) for Terraform locking 🚧([see commit](https://github.com/phonewrites/devops-recipe-app-api/commit/463a1909c718f820428c49f1f2e9218624cbdb3b))
-
 ### Changed
 - **RDS DB storage type**: Upgraded from `gp2` → `gp3`
 

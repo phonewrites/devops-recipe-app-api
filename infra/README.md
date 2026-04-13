@@ -45,7 +45,7 @@ OIDC-based IAM roles are created as in [`setup/iam_oidc_mgmt.tf`](setup/iam_oidc
 
 Application infrastructure: networking, ECS, RDS, load balancing, DNS, and related resources for the running API.
 
-Order: local format/validate → GitHub variables, rulesets, and PR merge → Test the app with the URLs in the sections below (ECS, then ALB, then custom domain) → optional teardown last.
+Order: local format/validate → GitHub variables, rulesets, and PR merge → Test the app with the URLs in the sections below (ECS, then ALB, then custom domain) → full teardown: [Teardown (when done)](#teardown-when-done).
 
 ### Local format / validate (no backend)
 
@@ -61,11 +61,14 @@ You can format and validate without AWS credentials. Use `-backend=false` when y
 
 ### GitHub Actions
 
-Workflow definitions: [`.github/workflows/`](../.github/workflows/). Example branch ruleset JSON (not applied automatically by GitHub): [`.github/rulesets/protect-delete-and-need-pr-to-merge.json`](../.github/rulesets/protect-delete-and-need-pr-to-merge.json). Create or adjust rules in the repository Settings → Rules UI (or API); after a PR has run once, add the `Checks passed` check under “Require status checks to pass”.
+Workflow definitions: [`.github/workflows/`](../.github/workflows/)
+
+Ruleset import template: [`.github/rulesets/protect-delete-and-need-pr-to-merge.json`](../.github/rulesets/protect-delete-and-need-pr-to-merge.json)
+`Settings` → `Rules` → `New Ruleset` → `Import a ruleset`; re-add or adjust `bypass_actors` value (`Bypass list` in the UI) if actor IDs differ; drop the CodeQL rule if code scanning is not enabled.
 
 1. Add the variables and secrets below. Role ARNs come from Part 1: `oidc-gh-actions-role` in the management account, `cicd-gh-actions-role` in the workload account. `TF_VAR_CUSTOM_DOMAIN` is the apex of the public DNS zone used in prod.
 
-2. Configure rulesets for the default branch and `prod` to match your policy (see the example JSON). Require status checks once `Checks passed` is available.
+2. Import or mirror the example ruleset JSON for the default branch and `prod` (template already lists `Checks passed`; if that context is missing after import, add it under required status checks).
 
 3. Open a pull request into `main` (Terraform workspace staging) or `prod` (workspace prod). Merging triggers Deploy: build/push images to ECR and run `terraform apply` in `deploy/`. Pushes that only change workflow `paths-ignore` patterns (for example `*.md`) do not start Deploy.
 
@@ -128,6 +131,17 @@ After DNS and certificate setup, test:
 `http://[CUSTOM_SUB_DOMAIN_NAME]/admin`  
 `http://[CUSTOM_SUB_DOMAIN_NAME]/api/docs`
 
-### Teardown (optional)
 
-When you are finished testing (ALB URLs, custom domain URLs, or earlier ECS URLs), run the Destroy workflow from the Actions tab and choose the staging/prod workspace.
+
+## Teardown (when done)
+
+Not for real production environments. Follow these steps to save bills.
+
+1. In GitHub, run the **Destroy** workflow ([`destroy.yml`](../.github/workflows/destroy.yml)) from the Actions tab. Run it once per workspace you created (e.g. **staging** and **prod** if both exist). This runs `terraform destroy` in `deploy/` with OIDC credentials.
+
+2. Run from the `infra/` directory, with AWS auth that can manage both accounts used in Part 1 (same as `setup` apply):
+```sh
+docker compose run --rm terraform -chdir=setup destroy
+```
+
+3. Empty & delete the [Remote state versioned bucket](#remote-state-bucket-outside-terraform) that was created manually (outside Terraform).
