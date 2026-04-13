@@ -1,13 +1,32 @@
+# PR gate workflow to provide the required status checks to GitHub Rulesets.
 name: Checks
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, prod]
 
 jobs:
+
   test-lint:
     name: Test and Lint
     uses: ./.github/workflows/test-lint.yml
     secrets:
       DOCKERHUB_USER: ${{ vars.DOCKERHUB_USER }}
       DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+  # Single required status check for Rulesets
+  checks-passed:
+    name: Checks passed
+    runs-on: ubuntu-slim
+    needs: [test-lint]
+    if: always()
+    steps:
+      - name: Require green test-lint
+        env:
+          TL: ${{ needs.test-lint.result }}
+        run: |
+          if [[ "$TL" != "success" ]]; then
+            echo "test-lint workflow did not succeed (result=$TL)"
+            exit 1
+          fi
+          echo "Checks passed."
