@@ -11,7 +11,7 @@ locals {
     "10.127.128.0/24",
     "10.127.129.0/24"
   ]
-  
+
   # Map of interface endpoints for private subnets (no NAT).
   interface_endpoints = {
     ecr         = "com.amazonaws.${data.aws_region.current.region}.ecr.api"
