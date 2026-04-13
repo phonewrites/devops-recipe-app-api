@@ -1,8 +1,6 @@
 {
   "name": "protect_delete_and_need_pr_to_merge",
   "target": "branch",
-  "source_type": "Repository",
-  "source": "phonewrites/devops-recipe-app-api",
   "enforcement": "active",
   "conditions": {
     "ref_name": {
@@ -35,6 +33,19 @@
     },
     {
       "type": "non_fast_forward"
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "do_not_enforce_on_create": true,
+        "required_status_checks": [
+          {
+            "context": "Checks passed",
+            "integration_id": 15368
+          }
+        ]
+      }
     },
     {
       "type": "code_scanning",
