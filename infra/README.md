@@ -70,7 +70,7 @@ Ruleset import template: [`.github/rulesets/protect-delete-and-need-pr-to-merge.
 
 2. Import or mirror the example ruleset JSON for the default branch and `prod` (template already lists `Checks passed`; if that context is missing after import, add it under required status checks).
 
-3. Open a pull request into `main` (Terraform workspace staging) or `prod` (workspace prod). Merging triggers Deploy: build/push images to ECR and run `terraform apply` in `deploy/`.
+3. Open a pull request into `main` (Terraform workspace staging) or `prod` (workspace prod). Merging triggers Deploy: build/push images to ECR and run `terraform apply` in `deploy/`. Pushes that change workflow `paths-ignore` patterns (for example `*.md`) do not trigger Deploy.
 
 #### Variables
 
