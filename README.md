@@ -97,7 +97,7 @@ docker compose up -d
 
 ## Next: AWS & Terraform
 
-1. [`infra/README.md`](infra/README.md) — hub: run docker compose from `infra/`, order is `setup/` then `deploy/`.
+1. [`infra/README.md`](infra/README.md) — hub: run docker compose from `infra/`, order is `setup/` then `deploy/`, plus a short **CI/CD workflows** overview (which GitHub Actions run on PR vs push).
 2. Terraform pre-deployment setup: `terraform -chdir=setup`.
 3. Terraform deployment setup: `terraform -chdir=deploy`.
 

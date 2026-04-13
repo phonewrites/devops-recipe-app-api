@@ -1,3 +1,4 @@
+# Reusable workflow that runs basic validation tests for Python & Terraform.
 name: Python Test & Lint
 
 on:
@@ -11,6 +12,7 @@ on:
         description: "Token for DockerHub auth"
 
 jobs:
+
   python:
     name: Python
     runs-on: ubuntu-latest

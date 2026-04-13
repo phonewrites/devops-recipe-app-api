@@ -1,4 +1,4 @@
-# This workflow is triggered manually to destroy AWS resources in prod account.
+# Manually triggered workflow to destroy AWS resources – for interview demos.
 name: Destroy
 
 on:
@@ -17,6 +17,7 @@ permissions:
                  #default permission when no permissions block is present
 
 jobs:
+
   destroy:
     name: Destroy
     runs-on: ubuntu-latest
