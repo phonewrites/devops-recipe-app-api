@@ -50,6 +50,7 @@ jobs:
           role-session-name: gh-actions-mgmt-${{ github.actor }}
           aws-region: us-east-1
           mask-aws-account-id: true
+          #Other actions, Terraform & CLI logs still show AWS account IDs
       - name: Assume the CI/CD Role in prod account
         uses: aws-actions/configure-aws-credentials@v6
         with:
