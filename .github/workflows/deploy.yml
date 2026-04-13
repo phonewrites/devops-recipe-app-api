@@ -7,9 +7,11 @@ on:
       - main
       - prod
     paths-ignore:
-      - '*.md'
-      - '*.gitignore'
-      - '*.dockerignore'
+      - '**/*.md'
+      - '.gitignore'
+      - '**/.gitignore'
+      - '.dockerignore'
+      - '**/.dockerignore'
       - 'LICENSE*'
 
 permissions:
